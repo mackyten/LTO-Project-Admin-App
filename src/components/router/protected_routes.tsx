@@ -22,7 +22,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (loading) {
     // Show a loading spinner or a simple message while checking auth status
-    return <div>Loading...</div>;
+    return <div>Loading2...</div>;
   }
 
   return currentUser ? <>{children}</> : null;
