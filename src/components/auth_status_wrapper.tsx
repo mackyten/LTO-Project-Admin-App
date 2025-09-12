@@ -10,7 +10,7 @@ const AuthStatusWrapper = () => {
     if (!loading) {
       if (currentUser) {
         // User is authenticated, redirect to the Home page
-        navigate('/', { replace: true });
+        navigate('/app', { replace: true });
       } else {
         // User is not authenticated, redirect to the Login page
         navigate('/login', { replace: true });
@@ -19,7 +19,7 @@ const AuthStatusWrapper = () => {
   }, [currentUser, loading, navigate]);
 
   // Optionally, show a loading screen while the auth status is being checked
-  return <div>Loading...</div>;
+  return <div>Loading1...</div>;
 };
 
 export default AuthStatusWrapper;
