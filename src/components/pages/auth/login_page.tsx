@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h1" color="text.primary">
+        <Typography variant="h1" color="background.default">
           Welcome Back!
         </Typography>
 
@@ -75,8 +75,8 @@ const LoginPage: React.FC = () => {
             alignItems: "center",
             width: "420px",
             border: "1px solid",
-            borderColor: "text.primary",
-            backgroundColor: alpha(theme.palette.text.primary, 0.1),
+            borderColor: "background.default",
+            backgroundColor: alpha(theme.palette.background.default, 0.1),
             padding: 8,
             borderRadius: 8,
           }}
@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
           <Divider />
           <Button
             sx={{
-              color: "text.primary",
+              color: "background.default",
             }}
           >
             Forgot Password? Click here

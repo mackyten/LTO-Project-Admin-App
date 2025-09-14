@@ -1,0 +1,186 @@
+// src/firebase/reports.ts
+import type { ReportModel } from "../models/report_model";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  type DocumentData,
+  getCountFromServer,
+  CollectionReference,
+  Query,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
+import { db } from "../firebase";
+
+interface GetReportsParams {
+  pageSize: number;
+  lastDoc?: DocumentData | null;
+  searchQuery?: string;
+}
+
+// Helper function to generate the end-of-range string for a "starts with" query
+const getEndRange = (str: string) => {
+  if (!str || typeof str !== "string") {
+    return str;
+  }
+  const lastChar = str.slice(-1);
+  const nextChar = String.fromCharCode(lastChar.charCodeAt(0) + 1);
+  return str.slice(0, -1) + nextChar;
+};
+
+export const getReports = async ({
+  pageSize,
+  lastDoc,
+  searchQuery = "",
+}: GetReportsParams): Promise<{
+  reports: ReportModel[];
+  lastDoc: DocumentData | null;
+  totalCount: number;
+}> => {
+  let q;
+  let reports: ReportModel[] = [];
+  let lastVisible: DocumentData | null = null;
+  let totalCount = 0;
+
+  let countQ: CollectionReference<DocumentData> | Query<DocumentData> =
+    collection(db, "reports");
+
+  if (searchQuery) {
+    const plateNumberQuery = query(
+      collection(db, "reports"),
+      where("plateNumber", "==", searchQuery),
+      limit(pageSize)
+    );
+    const plateNumberSnapshot = await getDocs(plateNumberQuery);
+    if (!plateNumberSnapshot.empty) {
+      q = plateNumberQuery;
+      countQ = query(
+        collection(db, "reports"),
+        where("plateNumber", "==", searchQuery)
+      );
+    } else {
+      // Create a case-insensitive "starts with" query for fullname
+      const lowercaseQuery = searchQuery.toLowerCase();
+      const endRange = getEndRange(lowercaseQuery);
+
+      q = query(
+        collection(db, "reports"),
+        where("fullname", ">=", lowercaseQuery),
+        where("fullname", "<", endRange),
+        limit(pageSize),
+        ...(lastDoc ? [startAfter(lastDoc)] : [])
+      );
+
+      // The count query must use the same search filters
+      countQ = query(
+        collection(db, "reports"),
+        where("fullname", ">=", lowercaseQuery),
+        where("fullname", "<", endRange)
+      );
+    }
+  } else {
+    q = query(
+      collection(db, "reports"),
+      orderBy("createdAt", "desc"),
+      limit(pageSize),
+      ...(lastDoc ? [startAfter(lastDoc)] : [])
+    );
+  }
+
+  try {
+    // If the main query is a search query, we also need to get the count for it.
+    if (searchQuery) {
+      // Run both the paginated search query and the count query for that search
+      const [querySnapshot, countSnapshot] = await Promise.all([
+        getDocs(q),
+        getCountFromServer(countQ),
+      ]);
+      totalCount = countSnapshot.data().count;
+
+      // This is a Firestore limitation:
+      // You cannot use orderBy on a field that is not part of the where clause.
+      // Therefore, we sort the results in memory.
+      const sortedReports = querySnapshot.docs
+        .map((doc) => doc.data() as ReportModel)
+        .sort((a, b) => {
+          let aTime, bTime;
+
+          // Safely get the timestamp value for a
+          if (a.createdAt instanceof Timestamp) {
+            aTime = a.createdAt.toDate().getTime();
+          } else {
+            // If not a Timestamp, assume it's a string or other invalid type and handle it
+            // You can parse it as a Date if it's a valid date string
+            // or set it to 0 to sort it at the bottom
+            aTime = new Date(a.createdAt as unknown as string).getTime() || 0;
+          }
+
+          // Safely get the timestamp value for b
+          if (b.createdAt instanceof Timestamp) {
+            bTime = b.createdAt.toDate().getTime();
+          } else {
+            bTime = new Date(b.createdAt as unknown as string).getTime() || 0;
+          }
+
+          return bTime - aTime;
+        });
+      reports = sortedReports.map((data) => ({
+        ...data,
+        documentId: (data as DocumentData).documentId,
+      }));
+
+      // Find the last visible document based on the in-memory sorted array
+      if (querySnapshot.docs.length > 0) {
+        lastVisible =
+          querySnapshot.docs.find(
+            (doc) => doc.id === reports[reports.length - 1].documentId
+          ) || null;
+      }
+    } else {
+      // For the default, non-search query, we can rely on standard pagination
+      const [querySnapshot, countSnapshot] = await Promise.all([
+        getDocs(q),
+        getCountFromServer(collection(db, "reports")),
+      ]);
+
+      totalCount = countSnapshot.data().count;
+
+      reports = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          documentId: doc.id,
+          ...data,
+        } as ReportModel;
+      });
+
+      if (!querySnapshot.empty) {
+        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      }
+    }
+  } catch (e) {
+    console.error("Error getting documents: ", e);
+  }
+
+  return { reports, lastDoc: lastVisible, totalCount };
+};
+
+export const deleteReport = async (documentId: string): Promise<void> => {
+  if (!documentId) {
+    throw new Error("Document ID is required to delete a report.");
+  }
+
+  try {
+    const reportRef = doc(db, "reports", documentId);
+    await deleteDoc(reportRef);
+    console.log(`Document with ID ${documentId} successfully deleted.`);
+  } catch (e) {
+    console.error(`Error deleting document with ID ${documentId}: `, e);
+    throw e; // Re-throw the error to be handled by the caller
+  }
+};
