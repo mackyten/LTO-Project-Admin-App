@@ -18,12 +18,31 @@ export const theme = createTheme({
       default: mainColor.background,
     },
     text: {
-      primary: mainColor.textPrimary,
+      primary: mainColor.tertiary, //mainColor.textPrimary,
+
     },
     // Add more colors from your palette
   },
 
   components: {
+    MuiTableCell: {
+      styleOverrides: {
+        // This targets all table cells
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.background.paper, // Example default color
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }),
+        // This targets cells specifically inside the TableHead
+        head: ({ theme }) => ({
+          backgroundColor: mainColor.tertiary, // 👈 Set the color here
+          color: theme.palette.common.white, // Optional: change text color for readability
+          fontWeight: "bold",
+        }),
+        body: ({ theme }) => ({
+          color: theme.palette.primary.main, // Set the text color here
+        }),
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

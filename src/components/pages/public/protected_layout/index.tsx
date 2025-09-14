@@ -17,74 +17,55 @@ import {
 } from "@mui/material";
 import ProtectedRoute from "../../../router/protected_routes";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import Drawer from "@mui/material/Drawer";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { sideDrawerItems } from "./components/types";
+import { mainColor } from "../../../../themes/colors";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 60;
 
 const ProtectedLayout: React.FC = () => {
   const theme = useTheme();
-
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [desktopOpen, setDesktopOpen] = React.useState(true);
   const [isClosing, setIsClosing] = React.useState(false);
-
   const navigate = useNavigate();
-
-  const handleNavigate = (route: string) => {
-    navigate(route);
-  };
-
+  const handleNavigate = (route: string) => navigate(route);
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
   };
-
-  const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
-  };
-
+  const handleDrawerTransitionEnd = () => setIsClosing(false);
   const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
-    }
+    if (!isClosing) setMobileOpen(!mobileOpen);
   };
+
   const drawer = (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Toolbar />
       <Divider />
-
-      {/* This Box will grow and push the button down */}
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         <List>
           {sideDrawerItems
             .filter(
               (x) => x.title !== "Administrators" && x.title !== "Account"
             )
-            .map((item, index) => {
+            .map((item) => {
               const isActive = location.pathname === item.route;
               return (
                 <ListItem
+                  id={item.title}
                   key={item.route}
                   disablePadding
                   sx={
                     isActive
                       ? {
                           border: "1px solid",
-                          borderColor: "text.primary",
+                          borderColor: "background.default",
                           borderRadius: "8px",
                           backgroundColor: alpha(
-                            theme.palette.text.primary,
+                            theme.palette.background.default,
                             0.1
                           ),
                         }
@@ -92,9 +73,7 @@ const ProtectedLayout: React.FC = () => {
                   }
                 >
                   <ListItemButton
-                    onClick={() => {
-                      handleNavigate(item.route);
-                    }}
+                    onClick={() => handleNavigate(item.route)}
                     sx={{
                       minHeight: 48,
                       justifyContent: desktopOpen ? "initial" : "center",
@@ -108,11 +87,14 @@ const ProtectedLayout: React.FC = () => {
                         justifyContent: "center",
                       }}
                     >
-                      {index % 2 === 0 ? <InboxIcon /> : <AccessAlarmIcon />}
+                      {item.icon}
                     </ListItemIcon>
                     <ListItemText
                       primary={item.title}
-                      sx={{ opacity: desktopOpen ? 1 : 0 }}
+                      sx={{
+                        opacity: desktopOpen || mobileOpen ? 1 : 0,
+                        color: "background.default",
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>
@@ -125,20 +107,21 @@ const ProtectedLayout: React.FC = () => {
             .filter(
               (x) => x.title === "Administrators" || x.title === "Account"
             )
-            .map((item, index) => {
+            .map((item) => {
               const isActive = location.pathname === item.route;
               return (
                 <ListItem
+                  id={item.title}
                   key={item.route}
                   disablePadding
                   sx={
                     isActive
                       ? {
                           border: "1px solid",
-                          borderColor: "text.primary",
+                          borderColor: "background.default",
                           borderRadius: "8px",
                           backgroundColor: alpha(
-                            theme.palette.text.primary,
+                            theme.palette.background.default,
                             0.1
                           ),
                         }
@@ -146,9 +129,7 @@ const ProtectedLayout: React.FC = () => {
                   }
                 >
                   <ListItemButton
-                    onClick={() => {
-                      handleNavigate(item.route);
-                    }}
+                    onClick={() => handleNavigate(item.route)}
                     sx={{
                       minHeight: 48,
                       justifyContent: desktopOpen ? "initial" : "center",
@@ -162,11 +143,14 @@ const ProtectedLayout: React.FC = () => {
                         justifyContent: "center",
                       }}
                     >
-                      {index % 2 === 0 ? <InboxIcon /> : <AccessAlarmIcon />}
+                      {item.icon}
                     </ListItemIcon>
                     <ListItemText
                       primary={item.title}
-                      sx={{ opacity: desktopOpen ? 1 : 0 }}
+                      sx={{
+                        opacity: desktopOpen || mobileOpen ? 1 : 0,
+                        color: "background.default",
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>
@@ -174,8 +158,6 @@ const ProtectedLayout: React.FC = () => {
             })}
         </List>
       </Box>
-
-      {/* This ListItem will stay at the bottom of the flex container */}
       {!mobileOpen && (
         <ListItem disablePadding sx={{ mt: "auto" }}>
           <ListItemButton
@@ -201,7 +183,10 @@ const ProtectedLayout: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               primary="Minimize Drawer"
-              sx={{ opacity: desktopOpen ? 1 : 0 }}
+              sx={{
+                opacity: desktopOpen || mobileOpen ? 1 : 0,
+                color: "background.default",
+              }}
             />
           </ListItemButton>
         </ListItem>
@@ -211,17 +196,16 @@ const ProtectedLayout: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", height: "100vh" }}>
         <AppBar
           position="fixed"
           sx={{
-            // Correct conditional width
+            bgcolor: mainColor.tertiary,
             width: {
               sm: `calc(100% - ${
                 desktopOpen ? drawerWidth : miniDrawerWidth
               }px)`,
             },
-            // Correct conditional margin-left
             ml: { sm: `${desktopOpen ? drawerWidth : miniDrawerWidth}px` },
             transition: (theme) =>
               theme.transitions.create(["width", "margin"], {
@@ -242,14 +226,13 @@ const ProtectedLayout: React.FC = () => {
             </IconButton>
             <Typography variant="h6" noWrap component="div">
               Responsive drawer
-            </Typography>{" "}
+            </Typography>
           </Toolbar>
         </AppBar>
 
         <Box
           component="nav"
           sx={{
-            // Correct conditional width
             width: { sm: desktopOpen ? drawerWidth : miniDrawerWidth },
             flexShrink: { sm: 0 },
             transition: (theme) =>
@@ -260,7 +243,6 @@ const ProtectedLayout: React.FC = () => {
           }}
           aria-label="mailbox folders"
         >
-          {/* Temporary Drawer (for mobile) */}
           <Drawer
             variant="temporary"
             open={mobileOpen}
@@ -271,27 +253,22 @@ const ProtectedLayout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
-                backgroundColor: "secondary.main",
+                backgroundColor: mainColor.tertiary,
               },
             }}
-            slotProps={{
-              root: {
-                keepMounted: true,
-              },
-            }}
+            slotProps={{ root: { keepMounted: true } }}
           >
             {drawer}
           </Drawer>
-          {/* Permanent Drawer (for desktop) */}
           <Drawer
             variant="permanent"
+            open
             sx={{
               display: { xs: "none", sm: "block" },
-              // Correct conditional width for the paper
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: desktopOpen ? drawerWidth : miniDrawerWidth,
-                backgroundColor: "secondary.main",
+                backgroundColor: mainColor.tertiary,
                 overflowX: "hidden",
                 transition: (theme) =>
                   theme.transitions.create("width", {
@@ -300,35 +277,61 @@ const ProtectedLayout: React.FC = () => {
                   }),
               },
             }}
-            open
           >
             {drawer}
           </Drawer>
         </Box>
-
         <Box
+          sx={{
+            // height: "100%",
+            px: "50px",
+            py: "20px",
+            width: {
+              xs: "calc(99vw - 100px)", // mobile
+              sm: `calc(100vw - ${
+                desktopOpen ? drawerWidth : miniDrawerWidth
+              }px - 130px)`, // small and up
+            },
+          }}
+        >
+          <Toolbar />
+
+          <Outlet />
+        </Box>
+
+        {/* <Box
           component="main"
           sx={{
+            border:"1px solid pink",
             flexGrow: 1,
-            p: 3,
-            // Correct conditional width
+            display: "flex",
+            flexDirection: "column",
+            height: "100vh",
             width: {
               sm: `calc(100% - ${
                 desktopOpen ? drawerWidth : miniDrawerWidth
               }px)`,
             },
-            // This ml is not needed if you have ml on AppBar, but it can be useful for padding
-            ml: { sm: `${desktopOpen ? drawerWidth : miniDrawerWidth}px` },
-            transition: (theme) =>
-              theme.transitions.create(["width", "margin"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-              }),
           }}
         >
           <Toolbar />
-          <Outlet />
-        </Box>
+          <Box
+            sx={{
+              width: {
+                sm: `calc(100% - ${
+                  desktopOpen ? drawerWidth : miniDrawerWidth
+                }px)`,
+              },
+              transition: (theme) =>
+                theme.transitions.create(["width", "margin"], {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
+            }}
+          >
+            <Outlet />
+          </Box>
+        </Box> */}
       </Box>
     </ProtectedRoute>
   );
