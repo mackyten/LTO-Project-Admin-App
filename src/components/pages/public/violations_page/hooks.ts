@@ -1,9 +1,16 @@
 // src/hooks/useReports.ts
 
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { DocumentData } from "firebase/firestore";
 import type { ReportModel } from "../../../../models/report_model";
 import { deleteReport, getReports } from "../../../../firebase/reports";
+import type { DriverModel } from "../../../../models/driver_model";
+import { getDriverByPlateNumber } from "../../../../firebase/users";
 
 interface UseReportsParams {
   pageSize: number;
@@ -44,5 +51,13 @@ export const useDeleteReport = () => {
       console.error("Error deleting report: ", error);
       // Optional: Show a user-friendly error message here
     },
+  });
+};
+
+export const useDriverByPlateNumber = (plateNumber: string) => {
+  return useQuery<DriverModel | null, Error>({
+    queryKey: ["driver", plateNumber],
+    queryFn: () => getDriverByPlateNumber(plateNumber),
+    enabled: !!plateNumber,
   });
 };

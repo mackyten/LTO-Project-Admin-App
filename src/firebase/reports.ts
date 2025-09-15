@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { FirebaseCollections } from "../enums/collections";
 
 interface GetReportsParams {
   pageSize: number;
@@ -25,14 +26,6 @@ interface GetReportsParams {
 }
 
 // Helper function to generate the end-of-range string for a "starts with" query
-const getEndRange = (str: string) => {
-  if (!str || typeof str !== "string") {
-    return str;
-  }
-  const lastChar = str.slice(-1);
-  const nextChar = String.fromCharCode(lastChar.charCodeAt(0) + 1);
-  return str.slice(0, -1) + nextChar;
-};
 
 export const getReports = async ({
   pageSize,
@@ -49,9 +42,10 @@ export const getReports = async ({
   let totalCount = 0;
 
   let countQ: CollectionReference<DocumentData> | Query<DocumentData> =
-    collection(db, "reports");
+    collection(db, FirebaseCollections.reports);
 
   if (searchQuery) {
+    const searchQueryUpper = searchQuery.toUpperCase();
     const plateNumberQuery = query(
       collection(db, "reports"),
       where("plateNumber", "==", searchQuery),
@@ -66,22 +60,16 @@ export const getReports = async ({
       );
     } else {
       // Create a case-insensitive "starts with" query for fullname
-      const lowercaseQuery = searchQuery.toLowerCase();
-      const endRange = getEndRange(lowercaseQuery);
 
       q = query(
         collection(db, "reports"),
-        where("fullname", ">=", lowercaseQuery),
-        where("fullname", "<", endRange),
-        limit(pageSize),
-        ...(lastDoc ? [startAfter(lastDoc)] : [])
+        where("trackingNumber", "==", searchQueryUpper),
+        limit(pageSize)
       );
-
       // The count query must use the same search filters
       countQ = query(
         collection(db, "reports"),
-        where("fullname", ">=", lowercaseQuery),
-        where("fullname", "<", endRange)
+        where("trackingNumber", "==", searchQueryUpper)
       );
     }
   } else {
