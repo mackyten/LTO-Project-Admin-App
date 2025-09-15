@@ -21,6 +21,9 @@ interface ViolationsStore {
   isDeleteConfirmationDialogOpen: boolean;
   setDeleteConfirmationDialog: (val: boolean) => void;
 
+  isDriverDialogOpen: boolean;
+  setDriverDialogOpen: (val: boolean) => void;
+
   reset: () => void;
 }
 
@@ -35,6 +38,9 @@ const useViolationsStore = create<ViolationsStore>((set) => ({
   isFullDetailDialogOpen: false,
   setFullDetailDialogOpen: (isFullDetailDialogOpen) =>
     set({ isFullDetailDialogOpen }),
+
+  isDriverDialogOpen: false,
+  setDriverDialogOpen: (isDriverDialogOpen) => set({ isDriverDialogOpen }),
 
   selectedReport: undefined,
   setSelectedReport: (selectedReport: ReportModel | undefined) =>
