@@ -59,6 +59,7 @@ export default function ViolationsPage() {
       <Box sx={PageMainCont.SubCont}>
         <PageHeader
           title="Violations"
+          totalCountLabel="Total Violations"
           totalCount={totalCount}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

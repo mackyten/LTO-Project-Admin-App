@@ -1,6 +1,20 @@
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  QueryDocumentSnapshot,
+  type DocumentData,
+  Query,
+  orderBy,
+  limit,
+  startAfter,
+  getCountFromServer,
+} from "firebase/firestore";
 import { db } from "../firebase"; // Assuming you have your Firebase instance here
 import type { DriverModel } from "../models/driver_model";
+import type { UserRoles } from "../enums/roles";
+import type { UserModel } from "../models/user_model";
 
 /**
  * Queries the 'users' collection for a driver with a specific plate number.
@@ -48,4 +62,79 @@ export const getDriverByPlateNumber = async (
     console.error("Error getting driver by plate number: ", e);
     return null;
   }
+};
+
+interface GetUsersParams {
+  pageSize: number;
+  lastDoc: DocumentData | null | undefined;
+  role: UserRoles;
+  searchQuery?: string; // Make searchQuery optional
+}
+export const getUsers = async ({
+  pageSize,
+  lastDoc,
+  role,
+  searchQuery = "",
+}: GetUsersParams): Promise<{
+  users: UserModel[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  totalCount: number;
+}> => {
+  let q: Query<DocumentData>;
+  let countQ: Query<DocumentData>;
+  let users: UserModel[] = [];
+  let lastVisible: QueryDocumentSnapshot<DocumentData> | null = null;
+  let totalCount = 0;
+
+  try {
+    const userRef = collection(db, "users");
+    const baseQuery = query(userRef, where("role", "array-contains", role));
+
+    if (searchQuery) {
+      const searchKeywords = searchQuery
+        .toLowerCase()
+        .split(" ")
+        .filter(Boolean);
+      q = query(
+        baseQuery,
+        where("queryKeys", "array-contains-any", searchKeywords),
+        orderBy("queryKeys"), // Firestore requires an orderBy on the array-contains-any field for a range search
+        limit(pageSize),
+        ...(lastDoc ? [startAfter(lastDoc)] : [])
+      );
+      countQ = query(
+        baseQuery,
+        where("queryKeys", "array-contains-any", searchKeywords)
+      );
+    } else {
+      q = query(
+        baseQuery,
+        orderBy("createdAt", "desc"), // Assuming a 'createdAt' field for sorting
+        limit(pageSize),
+        ...(lastDoc ? [startAfter(lastDoc)] : [])
+      );
+      countQ = baseQuery;
+    }
+    const [querySnapshot, countSnapshot] = await Promise.all([
+      getDocs(q),
+      getCountFromServer(countQ),
+    ]);
+
+    totalCount = countSnapshot.data().count;
+    users = querySnapshot.docs.map(
+      (doc) =>
+        ({
+          documentId: doc.id,
+          ...doc.data(),
+        } as UserModel)
+    );
+
+    if (!querySnapshot.empty) {
+      lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    }
+  } catch (e) {
+    console.error("Error getting users: ", e);
+  }
+  console.log("users:", users);
+  return { users, lastDoc: lastVisible, totalCount };
 };

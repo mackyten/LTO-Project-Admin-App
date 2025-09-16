@@ -5,6 +5,7 @@ import { SearchField } from "../search_field";
 interface IPageHeader {
   title: string;
   totalCount: number;
+  totalCountLabel: string;
   searchQuery: string;
   setSearchQuery: (value: string) => void;
   handleSearchKeyDown: (event: React.KeyboardEvent<Element>) => void;
@@ -15,6 +16,7 @@ export const PageHeader: React.FC<IPageHeader> = ({
   totalCount,
   title,
   searchQuery,
+  totalCountLabel,
   setSearchQuery,
   handleSearchKeyDown,
   handleSearch,
@@ -38,7 +40,7 @@ export const PageHeader: React.FC<IPageHeader> = ({
             sm: 6,
           }}
         >
-          <Typography>Total Violations: {totalCount}</Typography>
+          <Typography>{totalCountLabel}: {totalCount}</Typography>
         </Grid>
         <Grid
           size={{
