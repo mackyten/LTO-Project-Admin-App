@@ -16,44 +16,28 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
-import { FormatDate } from "../../../../../utils/date_formatter";
-import { Delete, DriveEta, Info, MoreVert } from "@mui/icons-material";
-import useViolationsStore from "../store";
-import type { ReportModel } from "../../../../../models/report_model";
+import { Delete, DriveEta, MoreVert, Person } from "@mui/icons-material";
 import { useRef } from "react";
 import { mainColor } from "../../../../../themes/colors";
+import useEnforcersStore from "../store";
+import type { EnforcerModel } from "../../../../../models/enforcer_model";
 
 interface IDataTable {
-  allReports: ReportModel[];
+  enforcers: EnforcerModel[];
 }
-export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
+export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
   const anchorRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
   const {
     openMenuId,
     setOpenMenuId,
-    setFullDetailDialogOpen,
-    setSelectedReport,
     setDeleteConfirmationDialog,
-    setDriverDialogOpen,
-  } = useViolationsStore();
+    setSelectedEnforcer,
+    setProfileModalOpen,
+  } = useEnforcersStore();
 
   const handleToggle = (reportId: string) => {
     setOpenMenuId(openMenuId === reportId ? null : reportId);
-  };
-
-  const handleOpenFullDetails = (report: ReportModel) => {
-    setFullDetailDialogOpen(true);
-    setSelectedReport(report);
-  };
-  const handleDeleteReport = (report: ReportModel) => {
-    setSelectedReport(report);
-    setDeleteConfirmationDialog(true);
-  };
-
-  const handleViewDriversProfile = (report: ReportModel) => {
-    setSelectedReport(report);
-    setDriverDialogOpen(true);
   };
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -74,6 +58,16 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
     }
     setOpenMenuId(null);
   };
+
+  const handleDeleteReport = (enforcer: EnforcerModel) => {
+    setSelectedEnforcer(enforcer);
+    setDeleteConfirmationDialog(true);
+  };
+
+  const handleViewEnforcerProfile = (enforcer: EnforcerModel) => {
+    setSelectedEnforcer(enforcer);
+    setProfileModalOpen(true);
+  };
   return (
     <TableContainer component={Paper} sx={TableStyleProps.container}>
       <Table
@@ -86,46 +80,44 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
         <TableHead sx={TableStyleProps.tableHead}>
           <TableRow sx={TableStyleProps.tableRow}>
             <TableCell sx={TableStyleProps.tableHeadLeft}>#</TableCell>
-            <TableCell>Tracking Number</TableCell>
-            <TableCell width="15%">Full Name</TableCell>
-            <TableCell>Plate Number</TableCell>
-            <TableCell>Violations</TableCell>
-            <TableCell>Created At</TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Full Name</TableCell>
+            <TableCell>Email</TableCell>
             <TableCell sx={TableStyleProps.tableHeadRight}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {allReports.length === 0 ? (
+          {enforcers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} align="center">
                 No reports found.
               </TableCell>
             </TableRow>
           ) : (
-            allReports.map((report, index) => {
-              const isOpen = openMenuId === report.documentId;
+            enforcers.map((enforcer, index) => {
+              const isOpen = openMenuId === enforcer.documentId;
               return (
-                <TableRow key={report.documentId}>
+                <TableRow key={enforcer.documentId}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{report.trackingNumber || "N/A"}</TableCell>
-                  <TableCell>{report.fullname}</TableCell>
-                  <TableCell>{report.plateNumber}</TableCell>
-                  <TableCell>{report.violations.join(", ")}</TableCell>
-                  <TableCell>{FormatDate(report.createdAt)}</TableCell>
+                  <TableCell>{enforcer.enforcerIdNumber || "N/A"}</TableCell>
+                  <TableCell>
+                    {enforcer.lastName}, {enforcer.firstName}
+                  </TableCell>
+                  <TableCell>{enforcer.email}</TableCell>
                   <TableCell>
                     <IconButton
                       ref={(el) => {
-                        anchorRefs.current[report.documentId] = el;
+                        anchorRefs.current[enforcer.documentId] = el;
                       }}
-                      id={`composition-button-${report.documentId}`}
+                      id={`composition-button-${enforcer.documentId}`}
                       aria-controls={
                         isOpen
-                          ? `composition-menu-${report.documentId}`
+                          ? `composition-menu-${enforcer.documentId}`
                           : undefined
                       }
                       aria-expanded={isOpen ? "true" : undefined}
                       aria-haspopup="true"
-                      onClick={() => handleToggle(report.documentId)}
+                      onClick={() => handleToggle(enforcer.documentId)}
                     >
                       <MoreVert
                         sx={{
@@ -135,7 +127,9 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
                     </IconButton>
                     <Popper
                       open={isOpen}
-                      anchorEl={anchorRefs.current[report.documentId ?? index]}
+                      anchorEl={
+                        anchorRefs.current[enforcer.documentId ?? index]
+                      }
                       role={undefined}
                       placement="bottom-start"
                       transition
@@ -156,42 +150,31 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
                             <ClickAwayListener onClickAway={handleClose}>
                               <MenuList
                                 autoFocusItem={isOpen}
-                                id={`composition-menu-${report.documentId}`}
-                                aria-labelledby={`composition-button-${report.documentId}`}
+                                id={`composition-menu-${enforcer.documentId}`}
+                                aria-labelledby={`composition-button-${enforcer.documentId}`}
                                 onKeyDown={handleListKeyDown}
                                 sx={{
                                   color: "secondary.main",
                                 }}
                               >
                                 <MenuItem
-                                  onClick={() => handleOpenFullDetails(report)}
-                                >
-                                  <Info
-                                    sx={{
-                                      color: "success.main",
-                                    }}
-                                  />
-                                  <Typography variant="body2" sx={{ ml: 1 }}>
-                                    Full Details
-                                  </Typography>
-                                </MenuItem>
-                                <MenuItem
                                   onClick={() =>
-                                    handleViewDriversProfile(report)
+                                    handleViewEnforcerProfile(enforcer)
                                   }
                                 >
-                                  <DriveEta
+                                  <Person
                                     sx={{
                                       color: mainColor.highlight,
                                     }}
                                   />
 
                                   <Typography variant="body2" sx={{ ml: 1 }}>
-                                    View Driver's Profile
+                                    View Profile
                                   </Typography>
                                 </MenuItem>
+
                                 <MenuItem
-                                  onClick={() => handleDeleteReport(report)}
+                                  onClick={() => handleDeleteReport(enforcer)}
                                 >
                                   <Delete
                                     sx={{

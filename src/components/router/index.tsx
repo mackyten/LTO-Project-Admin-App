@@ -1,16 +1,25 @@
 // src/router/index.tsx
-
 import { createBrowserRouter } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
 import AppLayout from "../../layouts/app_layout";
 import AuthStatusWrapper from "../auth_status_wrapper";
-import LoginPage from "../pages/auth/login_page";
-import HomePage from "../pages/public/home_page/home_page";
-import ViolationsPage from "../pages/public/violations_page";
-import EnforcersPage from "../pages/public/enforcers_page";
-import PaymentsPage from "../pages/public/payments_page";
-import AdministratorsPage from "../pages/public/administrators_page";
-import AccountPage from "../pages/public/account_page";
-import ProtectedLayout from "../pages/public/protected_layout";
+
+// Lazy imports
+const LoginPage = lazy(() => import("../pages/auth/login_page"));
+const HomePage = lazy(() => import("../pages/public/home_page/home_page"));
+const ViolationsPage = lazy(() => import("../pages/public/violations_page"));
+const EnforcersPage = lazy(() => import("../pages/public/enforcers_page"));
+const PaymentsPage = lazy(() => import("../pages/public/payments_page"));
+const AdministratorsPage = lazy(
+  () => import("../pages/public/administrators_page")
+);
+const AccountPage = lazy(() => import("../pages/public/account_page"));
+const ProtectedLayout = lazy(() => import("../pages/public/protected_layout"));
+
+// A simple wrapper for Suspense
+const withSuspense = (Component: React.ReactNode) => (
+  <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
+);
 
 const router = createBrowserRouter([
   {
@@ -23,36 +32,35 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <LoginPage />,
+        element: withSuspense(<LoginPage />),
       },
-      // This is the new parent route for all authenticated pages
       {
-        path: "app", // You can name this anything, like "dashboard"
-        element: <ProtectedLayout />,
+        path: "app",
+        element: withSuspense(<ProtectedLayout />),
         children: [
           {
-            index: true, // This makes "/app" render the HomePage
-            element: <HomePage />,
+            index: true,
+            element: withSuspense(<HomePage />),
           },
           {
             path: "violations",
-            element: <ViolationsPage />,
+            element: withSuspense(<ViolationsPage />),
           },
           {
             path: "enforcers",
-            element: <EnforcersPage />,
+            element: withSuspense(<EnforcersPage />),
           },
           {
             path: "payments",
-            element: <PaymentsPage />,
+            element: withSuspense(<PaymentsPage />),
           },
           {
             path: "administrators",
-            element: <AdministratorsPage />,
+            element: withSuspense(<AdministratorsPage />),
           },
           {
             path: "account",
-            element: <AccountPage />,
+            element: withSuspense(<AccountPage />),
           },
         ],
       },
