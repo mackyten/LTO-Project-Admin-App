@@ -34,12 +34,10 @@ export const Pagination: React.FC<IPagination> = ({
         {isFetchingNextPage ? (
           "Loading..."
         ) : (
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>See More...</Box>
-        )}
-        {isFetchingNextPage ? (
-          "Loading..."
-        ) : (
-          <Box sx={{ display: { xs: "block", sm: "none" } }}>More...</Box>
+          <>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>See More...</Box>
+            <Box sx={{ display: { xs: "block", sm: "none" } }}>More...</Box>
+          </>
         )}
       </Button>
     </Box>
