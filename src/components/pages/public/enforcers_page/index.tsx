@@ -8,6 +8,7 @@ import { TableLoadingIndicator } from "../../../shared/loading_indicator/table_l
 import { Pagination } from "../../../shared/pagination";
 import { PageLoadingIndicator } from "../../../shared/loading_indicator/page_loading";
 import { DataTable } from "./components/data_table";
+import { EnforcerDetailsDialog } from "./components/enforcer_details_dialog";
 
 const EnforcerPage: React.FC = () => {
   const { pageSize, searchQuery, setSearchQuery } = useEnforcersStore();
@@ -56,6 +57,7 @@ const EnforcerPage: React.FC = () => {
         <PageHeader
           title="Enforcers"
           totalCountLabel="Total Enforcers"
+          searchPlaceholder="Search by name"
           totalCount={totalCount}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -75,6 +77,7 @@ const EnforcerPage: React.FC = () => {
           onLoadMore={handleLoadMore}
         />
       </Box>
+      <EnforcerDetailsDialog />
     </Box>
   );
 };

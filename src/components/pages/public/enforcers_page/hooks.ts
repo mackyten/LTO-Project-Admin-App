@@ -21,7 +21,7 @@ export const useEnforcers = ({
 }: UseUsersParams) => {
   console.log("Searching");
   return useInfiniteQuery<GetUsersResult>({
-    queryKey: ["enforcers", searchQuery],
+    queryKey: ["enforcers"],
     queryFn: ({ pageParam }) =>
       getUsers({
         pageSize,

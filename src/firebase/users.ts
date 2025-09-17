@@ -90,38 +90,22 @@ export const getUsers = async ({
     const userRef = collection(db, "users");
     const baseQuery = query(userRef, where("role", "array-contains", role));
 
-    if (searchQuery) {
-      const searchKeywords = searchQuery
-        .toLowerCase()
-        .split(" ")
-        .filter(Boolean);
-      q = query(
-        baseQuery,
-        where("queryKeys", "array-contains-any", searchKeywords),
-        orderBy("queryKeys"), // Firestore requires an orderBy on the array-contains-any field for a range search
-        limit(pageSize),
-        ...(lastDoc ? [startAfter(lastDoc)] : [])
-      );
-      countQ = query(
-        baseQuery,
-        where("queryKeys", "array-contains-any", searchKeywords)
-      );
-    } else {
-      q = query(
-        baseQuery,
-        orderBy("createdAt", "desc"), // Assuming a 'createdAt' field for sorting
-        limit(pageSize),
-        ...(lastDoc ? [startAfter(lastDoc)] : [])
-      );
-      countQ = baseQuery;
-    }
+    // Always query by role only
+    q = query(
+      baseQuery,
+      orderBy("createdAt", "desc"),
+      limit(pageSize * 5), // Fetch more to allow for in-memory filtering if searching
+      ...(lastDoc ? [startAfter(lastDoc)] : [])
+    );
+    countQ = baseQuery;
+
     const [querySnapshot, countSnapshot] = await Promise.all([
       getDocs(q),
       getCountFromServer(countQ),
     ]);
 
     totalCount = countSnapshot.data().count;
-    users = querySnapshot.docs.map(
+    const allUsers = querySnapshot.docs.map(
       (doc) =>
         ({
           documentId: doc.id,
@@ -129,8 +113,19 @@ export const getUsers = async ({
         } as UserModel)
     );
 
-    if (!querySnapshot.empty) {
-      lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    if (searchQuery) {
+      const search = searchQuery.toLocaleUpperCase();
+      users = allUsers.filter(user =>
+        Array.isArray(user.queryKeys) && user.queryKeys.includes(search)
+      ).slice(0, pageSize);
+    } else {
+      users = allUsers.slice(0, pageSize);
+    }
+
+    if (users.length > 0) {
+      const lastUserId = users[users.length - 1].documentId;
+      const lastDocIndex = querySnapshot.docs.findIndex(doc => doc.id === lastUserId);
+      lastVisible = lastDocIndex !== -1 ? querySnapshot.docs[lastDocIndex] : null;
     }
   } catch (e) {
     console.error("Error getting users: ", e);

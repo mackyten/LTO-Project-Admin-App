@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
-import { Delete, DriveEta, MoreVert, Person } from "@mui/icons-material";
+import { Delete, MoreVert, Person } from "@mui/icons-material";
 import { useRef } from "react";
 import { mainColor } from "../../../../../themes/colors";
 import useEnforcersStore from "../store";
@@ -81,9 +81,9 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
           <TableRow sx={TableStyleProps.tableRow}>
             <TableCell sx={TableStyleProps.tableHeadLeft}>#</TableCell>
             <TableCell>ID</TableCell>
-            <TableCell>Full Name</TableCell>
+            <TableCell colSpan={2}>Full Name</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell sx={TableStyleProps.tableHeadRight}>Actions</TableCell>
+            <TableCell sx={TableStyleProps.tableHeadRight} width={50}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -100,6 +100,18 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                 <TableRow key={enforcer.documentId}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{enforcer.enforcerIdNumber || "N/A"}</TableCell>
+                  <TableCell sx={{ width: 50, paddingRight: 0 }}>
+                    <img
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                      src={enforcer.profilePictureUrl}
+                      alt={`${enforcer.firstName} ${enforcer.lastName}`}
+                    />
+                  </TableCell>
                   <TableCell>
                     {enforcer.lastName}, {enforcer.firstName}
                   </TableCell>
