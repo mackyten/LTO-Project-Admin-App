@@ -31,7 +31,16 @@ export const Pagination: React.FC<IPagination> = ({
         endIcon={<ArrowForwardIos />}
         sx={TableStyleProps.paginationContainer.button}
       >
-        {isFetchingNextPage ? "Loading..." : "See More..."}
+        {isFetchingNextPage ? (
+          "Loading..."
+        ) : (
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>See More...</Box>
+        )}
+        {isFetchingNextPage ? (
+          "Loading..."
+        ) : (
+          <Box sx={{ display: { xs: "block", sm: "none" } }}>More...</Box>
+        )}
       </Button>
     </Box>
   );
