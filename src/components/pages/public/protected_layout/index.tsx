@@ -11,6 +11,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Popover,
   Toolbar,
   Typography,
   useTheme,
@@ -18,18 +19,39 @@ import {
 import ProtectedRoute from "../../../router/protected_routes";
 import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  ArrowBackIos,
+  ArrowForwardIos,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
 import { sideDrawerItems } from "./components/types";
 import { mainColor } from "../../../../themes/colors";
+import { useLogout } from "../../auth/hooks";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 60;
 
 const ProtectedLayout: React.FC = () => {
   const theme = useTheme();
+  const logout = useLogout();
+
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [desktopOpen, setDesktopOpen] = React.useState(true);
   const [isClosing, setIsClosing] = React.useState(false);
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+
   const navigate = useNavigate();
   const handleNavigate = (route: string) => navigate(route);
   const handleDrawerClose = () => {
@@ -39,6 +61,10 @@ const ProtectedLayout: React.FC = () => {
   const handleDrawerTransitionEnd = () => setIsClosing(false);
   const handleDrawerToggle = () => {
     if (!isClosing) setMobileOpen(!mobileOpen);
+  };
+  const handleLogout = () => {
+    logout.mutate();
+    handleClose();
   };
 
   const drawer = (
@@ -224,9 +250,44 @@ const ProtectedLayout: React.FC = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{
+                visibility: "hidden",
+              }}
+            >
               Responsive drawer
             </Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton
+              onClick={handleClick}
+              color="inherit"
+              aria-label="user profile"
+              edge="end"
+            >
+              <AccountCircleOutlined />
+            </IconButton>
+
+            <Popover
+              id={"account-popover"}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <Box
+                onClick={handleLogout}
+                sx={{ display: "flex", alignItems: "center", p: 2 }}
+              >
+                <LogoutIcon sx={{ mr: 1 }} />
+                <Typography>Logout</Typography>
+              </Box>
+            </Popover>
           </Toolbar>
         </AppBar>
 

@@ -60,6 +60,7 @@ export default function ViolationsPage() {
         <PageHeader
           title="Violations"
           totalCountLabel="Total Violations"
+          searchPlaceholder="Search by plate number or name"
           totalCount={totalCount}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

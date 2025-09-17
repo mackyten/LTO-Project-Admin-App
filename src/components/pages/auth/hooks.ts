@@ -1,20 +1,26 @@
+import { logoutUser } from "../../../firebase/auth";
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      queryClient.clear();
+      navigate("/auth/login"); // Redirect to login page after logout
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+    },
+  });
+};
 // src/hooks/useLogin.ts
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../../firebase";
-import type { LoginSchemaType } from "./schema";
+import { loginUser } from "../../../firebase/auth";
 
-const loginUser = async (credentials: LoginSchemaType) => {
-  const { email, password } = credentials;
-  const userCredential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-  return userCredential.user;
-};
 
 export const useLogin = () => {
   const queryClient = useQueryClient();

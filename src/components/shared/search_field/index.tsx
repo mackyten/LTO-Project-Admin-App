@@ -12,6 +12,7 @@ import { textFieldLight } from "../../../themes/textfield";
 
 interface ISearchField {
   searchQuery: string;
+  searchPlaceholder: string;
   setSearchQuery: (value: string) => void;
   handleSearchKeyDown: (event: React.KeyboardEvent<Element>) => void;
   handleSearch: () => void;
@@ -19,6 +20,7 @@ interface ISearchField {
 
 export const SearchField: React.FC<ISearchField> = ({
   searchQuery,
+  searchPlaceholder,
   setSearchQuery,
   handleSearchKeyDown,
   handleSearch,
@@ -32,7 +34,7 @@ export const SearchField: React.FC<ISearchField> = ({
     >
       <TextField
         fullWidth
-        placeholder="Search by plate number or name"
+        placeholder={searchPlaceholder || "Search..."}
         variant="outlined"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

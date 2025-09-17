@@ -7,6 +7,7 @@ interface IPageHeader {
   totalCount: number;
   totalCountLabel: string;
   searchQuery: string;
+  searchPlaceholder: string;
   setSearchQuery: (value: string) => void;
   handleSearchKeyDown: (event: React.KeyboardEvent<Element>) => void;
   handleSearch: () => void;
@@ -17,6 +18,7 @@ export const PageHeader: React.FC<IPageHeader> = ({
   title,
   searchQuery,
   totalCountLabel,
+  searchPlaceholder,
   setSearchQuery,
   handleSearchKeyDown,
   handleSearch,
@@ -40,7 +42,9 @@ export const PageHeader: React.FC<IPageHeader> = ({
             sm: 6,
           }}
         >
-          <Typography>{totalCountLabel}: {totalCount}</Typography>
+          <Typography>
+            {totalCountLabel}: {totalCount}
+          </Typography>
         </Grid>
         <Grid
           size={{
@@ -49,6 +53,7 @@ export const PageHeader: React.FC<IPageHeader> = ({
           }}
         >
           <SearchField
+            searchPlaceholder={searchPlaceholder}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             handleSearchKeyDown={handleSearchKeyDown}
