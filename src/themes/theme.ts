@@ -5,6 +5,7 @@ import { mainColor } from "./colors";
 
 export const theme = createTheme({
   palette: {
+    mode: 'light', 
     primary: {
       main: mainColor.primary,
     },
