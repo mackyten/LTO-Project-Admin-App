@@ -25,7 +25,18 @@ export const PageHeader: React.FC<IPageHeader> = ({
 }) => {
   return (
     <>
-      <Typography variant="h4" sx={{ mb: 1 }}>
+      <Typography
+        sx={{
+          mb: 1,
+          // Define font size responsively
+          fontSize: {
+            xs: "h6.fontSize",
+            sm: "h5.fontSize",
+            md: "h4.fontSize",
+        
+          },
+        }}
+      >
         {title}
       </Typography>
       <Grid

@@ -344,14 +344,13 @@ const ProtectedLayout: React.FC = () => {
         </Box>
         <Box
           sx={{
-            // height: "100%",
-            px: "50px",
+            px: { xs: "20px", sm: "50px" },
             py: "20px",
             width: {
-              xs: "calc(99vw - 100px)", // mobile
+              xs: "calc(99vw - 40px)",
               sm: `calc(100vw - ${
                 desktopOpen ? drawerWidth : miniDrawerWidth
-              }px - 130px)`, // small and up
+              }px - 130px)`,
             },
           }}
         >

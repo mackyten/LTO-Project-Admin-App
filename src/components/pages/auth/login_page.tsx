@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
       }}
     >
       {/* Remove the fixed positioning Box for the SVG */}
-      
+
       <Box
         sx={{
           position: "absolute",
@@ -128,7 +128,7 @@ const LoginPage: React.FC = () => {
           />
           <Divider />
           <Button
-            // loading prop is not a standard prop on MUI Button. Use a state variable or a custom component.
+            loading={isPending}
             type="submit"
             variant="contained"
             fullWidth
