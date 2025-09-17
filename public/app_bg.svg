@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 6000 3000">
+  <defs>
+    <clipPath id="clippath">
+      <polygon points="1386.1 0 0 0 0 1352.796 147.041 1352.796 946.545 1352.796 1193.608 592.418 1386.1 0" style="clip-rule: evenodd; fill: none;"/>
+    </clipPath>
+    <linearGradient id="linear-gradient" x1="1438.155" y1="892.919" x2="-623.564" y2="293.802" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#19b4fd"/>
+      <stop offset="1" stop-color="#102770"/>
+    </linearGradient>
+    <clipPath id="clippath-1">
+      <polygon points="1471.757 1792.927 865.939 1352.796 147.041 1352.796 0 1352.796 0 3000 1079.557 3000 1147.725 2790.19 1471.757 1792.927" style="clip-rule: evenodd; fill: none;"/>
+    </clipPath>
+    <linearGradient id="linear-gradient-2" x1="1436.559" y1="2798.635" x2="189.827" y2="1691.479" xlink:href="#linear-gradient"/>
+    <clipPath id="clippath-2">
+      <polygon points="865.939 1352.796 1471.757 1792.927 1334.131 2216.491 1718.382 2216.491 2042.413 1219.227 2366.445 221.964 2060.925 0 1386.1 0 1193.608 592.418 946.545 1352.796 865.939 1352.796" style="clip-rule: evenodd; fill: none;"/>
+    </clipPath>
+    <linearGradient id="linear-gradient-3" x1="2559.244" y1="1173.782" x2="1052.877" y2="1069.099" xlink:href="#linear-gradient"/>
+    <clipPath id="clippath-3">
+      <polygon points="1962.127 1466.309 1718.382 2216.491 1334.131 2216.491 1147.725 2790.19 1079.557 3000 2369.632 3000 2370.94 2995.996 2694.971 1998.733 1962.127 1466.309" style="clip-rule: evenodd; fill: none;"/>
+    </clipPath>
+    <linearGradient id="linear-gradient-4" x1="2743.603" y1="2497.209" x2="1504.561" y2="2115.147" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-5" x1="1820.146" y1="1912.958" x2="323.239" y2="626.601" gradientTransform="translate(109.687 -173.741)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#000"/>
+    </linearGradient>
+    <mask id="mask" x="0" y="0" width="1386.106" height="1352.796" maskUnits="userSpaceOnUse">
+      <rect width="1386.106" height="1352.796" style="fill: url(#linear-gradient-5);"/>
+    </mask>
+    <linearGradient id="linear-gradient-6" x1="2922.096" y1="1206.397" x2="1462.452" y2="1280.325" gradientTransform="translate(132.245 -159.137)" xlink:href="#linear-gradient-5"/>
+    <mask id="mask-1" x="1334.131" y="-.005" width="1032.314" height="2216.497" maskUnits="userSpaceOnUse">
+      <rect x="1334.131" y="-.005" width="1032.314" height="2216.497" style="fill: url(#linear-gradient-6);"/>
+    </mask>
+    <linearGradient id="linear-gradient-7" x1="1667.189" y1="2345.587" x2="449.439" y2="2311.284" gradientTransform="translate(117.173 -145.89)" xlink:href="#linear-gradient-5"/>
+    <mask id="mask-2" x="442.743" y="1352.796" width="1029.014" height="1647.204" maskUnits="userSpaceOnUse">
+      <rect x="442.743" y="1352.796" width="1029.014" height="1647.204" style="fill: url(#linear-gradient-7);"/>
+    </mask>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.7.7, SVG Export Plug-In . SVG Version: 1.2.0 Build 194)  -->
+  <g>
+    <g id="Layer_1">
+      <g>
+        <rect width="6000" height="3000" style="fill: #002223;"/>
+        <g style="clip-path: url(#clippath);">
+          <rect width="1386.1" height="1352.796" style="fill: url(#linear-gradient);"/>
+        </g>
+        <g style="clip-path: url(#clippath-1);">
+          <rect y="1352.796" width="1471.757" height="1647.204" style="fill: url(#linear-gradient-2);"/>
+        </g>
+        <g style="clip-path: url(#clippath-2);">
+          <rect x="865.939" width="1500.506" height="2216.491" style="fill: url(#linear-gradient-3);"/>
+        </g>
+        <g style="clip-path: url(#clippath-3);">
+          <rect x="1079.557" y="1466.309" width="1615.414" height="1533.691" style="fill: url(#linear-gradient-4);"/>
+        </g>
+        <g style="mask: url(#mask);">
+          <polygon points="876.182 289.73 629.119 1050.103 0 1050.103 0 1352.796 147.041 1352.796 865.939 1352.796 946.545 1352.796 1193.608 592.418 1386.1 0 970.314 0 876.182 289.73" style="fill: #51f4e9; fill-rule: evenodd;"/>
+        </g>
+        <g style="mask: url(#mask-1);">
+          <polygon points="1963.416 221.012 1639.384 1218.275 1456.314 1781.708 1471.757 1792.927 1334.131 2216.491 1718.382 2216.491 1962.127 1466.309 2042.413 1219.227 2366.445 221.964 2060.925 0 1659.203 0 1963.416 221.012" style="fill: #51f4e9; fill-rule: evenodd;"/>
+        </g>
+        <g style="mask: url(#mask-2);">
+          <polygon points="1048.56 1792.927 724.528 2790.19 656.361 3000 1079.557 3000 1147.725 2790.19 1334.131 2216.491 1471.757 1792.927 1456.314 1781.708 865.939 1352.796 442.743 1352.796 1048.56 1792.927" style="fill: #5ef9f6; fill-rule: evenodd;"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

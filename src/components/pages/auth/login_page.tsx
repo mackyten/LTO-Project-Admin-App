@@ -1,5 +1,5 @@
 import React from "react";
-import BackgroundSVG from "../../app_background";
+// Remove the BackgroundSVG import
 import {
   alpha,
   Box,
@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isPending } = useLogin(); // 👈 Use the mutation hook
+  const { mutate, isPending } = useLogin();
 
   const onSubmit = (data: LoginSchemaType) => {
     mutate(data);
@@ -39,19 +39,27 @@ const LoginPage: React.FC = () => {
     <Box
       sx={{
         width: "100vw",
-        height: "100vh",
+        height: "100vh", // Use height: 100vh for full viewport height
         position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        // Apply the background image using CSS properties
+        backgroundImage: 'url("/app_bg.svg")', // Adjust the path as needed
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
-      <BackgroundSVG className="background-svg" />
-
+      {/* Remove the fixed positioning Box for the SVG */}
+      
       <Box
         sx={{
           position: "absolute",
           top: 0,
           left: 0,
           width: "100%",
-          height: "100%",
+          minHeight: "100vh",
           zIndex: 1,
           display: "flex",
           flexDirection: "column",
@@ -59,25 +67,29 @@ const LoginPage: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h1" color="background.default">
+        <Typography
+          variant={theme.breakpoints.down("sm") ? "h3" : "h1"}
+          color="background.default"
+        >
           Welcome Back!
         </Typography>
 
         <Grid
-          component="form" // 👈 Add this component prop
-          onSubmit={handleSubmit(onSubmit)} // 👈 Handle form submission
-          container // The parent Grid should be a container
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          container
           rowGap={4}
           sx={{
             mt: 10,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            width: "420px",
+            width: { xs: "90vw", sm: "420px" },
+            maxWidth: 420,
             border: "1px solid",
             borderColor: "background.default",
             backgroundColor: alpha(theme.palette.background.default, 0.1),
-            padding: 8,
+            padding: 4,
             borderRadius: 8,
           }}
         >
@@ -86,41 +98,37 @@ const LoginPage: React.FC = () => {
             id="login-email"
             label="Email"
             variant="outlined"
-            fullWidth // Makes the TextField fill the width of the container
-            {...register("email")} // 👈 Register the field
-            error={!!errors.email} // 👈 Show error state
-            helperText={errors.email?.message} // 👈 Display error message
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MailOutlineIcon />
-                  </InputAdornment>
-                ),
-              },
+            fullWidth
+            {...register("email")}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MailOutlineIcon />
+                </InputAdornment>
+              ),
             }}
           />
           <TextField
             id="login-password"
             label="Password"
             variant="outlined"
-            fullWidth // Makes the TextField fill the width of the container
-            {...register("password")} // 👈 Register the field
-            error={!!errors.password} // 👈 Show error state
-            helperText={errors.password?.message} // 👈 Display error message
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlineRounded />
-                  </InputAdornment>
-                ),
-              },
+            fullWidth
+            {...register("password")}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlineRounded />
+                </InputAdornment>
+              ),
             }}
           />
           <Divider />
           <Button
-            loading={isPending}
+            // loading prop is not a standard prop on MUI Button. Use a state variable or a custom component.
             type="submit"
             variant="contained"
             fullWidth
