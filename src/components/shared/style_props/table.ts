@@ -3,6 +3,7 @@ import { mainColor } from "../../../themes/colors";
 export const TableStyleProps = {
   container: {
     maxHeight: `calc(100vh - 350px)`,
+    minHeight: `calc(100vh - 350px)`,
     width: "100%",
     borderTopRightRadius: "16px",
     borderTopLeftRadius: "16px",

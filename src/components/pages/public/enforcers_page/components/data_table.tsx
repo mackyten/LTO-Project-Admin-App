@@ -1,4 +1,6 @@
 import {
+  Avatar,
+  Box,
   ClickAwayListener,
   Grow,
   IconButton,
@@ -16,7 +18,13 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
-import { Delete, MoreVert, Person } from "@mui/icons-material";
+import {
+  CheckCircle,
+  Delete,
+  MoreVert,
+  Pending,
+  Person,
+} from "@mui/icons-material";
 import { useRef } from "react";
 import { mainColor } from "../../../../../themes/colors";
 import useEnforcersStore from "../store";
@@ -68,6 +76,28 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
     setSelectedEnforcer(enforcer);
     setProfileModalOpen(true);
   };
+
+  const getEnforcerStatus = (uuid: string | null) => {
+    if (uuid === null) {
+      return (
+        <Box display="flex" alignItems="center">
+          <Pending sx={{ color: "orange" }} />
+          <Typography variant="body2" sx={{ ml: 1 }}>
+            Pending
+          </Typography>
+        </Box>
+      );
+    } else {
+      return (
+        <Box display="flex" alignItems="center">
+          <CheckCircle sx={{ color: "green" }} />
+          <Typography variant="body2" sx={{ ml: 1 }}>
+            Registered
+          </Typography>
+        </Box>
+      );
+    }
+  };
   return (
     <TableContainer component={Paper} sx={TableStyleProps.container}>
       <Table
@@ -80,10 +110,26 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
         <TableHead sx={TableStyleProps.tableHead}>
           <TableRow sx={TableStyleProps.tableRow}>
             <TableCell sx={TableStyleProps.tableHeadLeft}>#</TableCell>
-            <TableCell>ID</TableCell>
-            <TableCell colSpan={2}>Full Name</TableCell>
+            <TableCell
+              sx={{
+                width: "300px",
+              }}
+            >
+              ID
+            </TableCell>
+            <TableCell
+              sx={{
+                width: "300px",
+              }}
+              colSpan={2}
+            >
+              Full Name
+            </TableCell>
             <TableCell>Email</TableCell>
-            <TableCell sx={TableStyleProps.tableHeadRight} width={50}>Actions</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell sx={TableStyleProps.tableHeadRight} width={50}>
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -101,21 +147,17 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{enforcer.enforcerIdNumber || "N/A"}</TableCell>
                   <TableCell sx={{ width: 50, paddingRight: 0 }}>
-                    <img
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                      }}
+                    <Avatar
                       src={enforcer.profilePictureUrl}
-                      alt={`${enforcer.firstName} ${enforcer.lastName}`}
+                      alt={enforcer.lastName}
+                      sx={{ width: "40px", height: "40px" }}
                     />
                   </TableCell>
                   <TableCell>
                     {enforcer.lastName}, {enforcer.firstName}
                   </TableCell>
                   <TableCell>{enforcer.email}</TableCell>
+                  <TableCell>{getEnforcerStatus(enforcer.uuid)}</TableCell>
                   <TableCell>
                     <IconButton
                       ref={(el) => {
