@@ -1,6 +1,7 @@
 import type { UserRoles } from "../enums/roles";
+import type { FirestoreBaseModel } from "./firestore_base_model";
 
-export interface UserModel {
+export interface UserModel extends FirestoreBaseModel {
   documentId: string;
   uuid: string;
   firstName: string;
@@ -11,9 +12,5 @@ export interface UserModel {
   profilePictureUrl?: string;
   role?: UserRoles;
   queryKeys?: string[];
-  isDeleted?: boolean;
-  deletedAt?: string | null;
-  createdAt: string;
-  lastUpdatedAt: string;
   temporaryPassword?: string;
 }
