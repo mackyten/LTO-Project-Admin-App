@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import type React from "react";
 import { SearchField } from "../search_field";
 
@@ -24,11 +24,13 @@ export const PageHeader: React.FC<IPageHeader> = ({
   handleSearch,
 }) => {
   return (
-    <>
+    <Box sx={{
+      width: "100%",
+
+    }}>
       <Typography
         sx={{
           mb: 1,
-          // Define font size responsively
           fontSize: {
             xs: "h6.fontSize",
             sm: "h5.fontSize",
@@ -72,6 +74,6 @@ export const PageHeader: React.FC<IPageHeader> = ({
           />
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 };

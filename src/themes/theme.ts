@@ -1,11 +1,9 @@
-// src/theme/theme.ts
-
 import { alpha, createTheme } from "@mui/material/styles";
 import { mainColor } from "./colors";
 
 export const theme = createTheme({
   palette: {
-    mode: 'light', 
+    mode: "light",
     primary: {
       main: mainColor.primary,
     },
@@ -19,91 +17,79 @@ export const theme = createTheme({
       default: mainColor.background,
     },
     text: {
-      primary: mainColor.tertiary, //mainColor.textPrimary,
-
+      primary: mainColor.tertiary,
     },
-    // Add more colors from your palette
   },
 
   components: {
     MuiTableCell: {
       styleOverrides: {
-        // This targets all table cells
         root: ({ theme }) => ({
-          backgroundColor: theme.palette.background.paper, // Example default color
+          backgroundColor: theme.palette.background.paper,
           borderBottom: `1px solid ${theme.palette.divider}`,
         }),
-        // This targets cells specifically inside the TableHead
         head: ({ theme }) => ({
-          backgroundColor: mainColor.tertiary, // 👈 Set the color here
-          color: theme.palette.common.white, // Optional: change text color for readability
+          backgroundColor: mainColor.tertiary,
+          color: theme.palette.common.white,
           fontWeight: "bold",
         }),
         body: ({ theme }) => ({
-          color: theme.palette.primary.main, // Set the text color here
+          color: theme.palette.primary.main,
         }),
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          // This applies to all buttons (text, contained, outlined)
-          height: "48px", // Set a uniform height for all buttons
-          borderRadius: "16px", // Set a uniform border radius for all buttons
-          // You can also add other universal styles here
-          textTransform: "none", // Prevents uppercase text
+          height: "48px",
+          borderRadius: "16px",
+          textTransform: "none",
           fontWeight: "bold",
         },
       },
     },
-    // 🎯 Target the TextField component
     MuiTextField: {
       styleOverrides: {
         root: {
-          // This affects the container of the TextField
           "& .MuiOutlinedInput-root": {
             backgroundColor: alpha(mainColor.background, 0.1),
             "& fieldset": {
-              borderColor: mainColor.textSecondary, // Change the border color
+              borderColor: alpha(mainColor.tertiary, 0.5),
             },
             "&:hover fieldset": {
-              borderColor: mainColor.textPrimary, // Change border on hover
+              borderColor: mainColor.tertiary,
             },
-
             "&.Mui-focused fieldset": {
-              borderColor: mainColor.highlight, // Change border when focused
+              borderColor: mainColor.highlight,
             },
           },
           "& .MuiInputBase-input": {
-            color: mainColor.textPrimary, // Change the input text color
+            color: mainColor.tertiary,
           },
         },
       },
     },
-    // 🎯 Target the InputLabel component
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: mainColor.textSecondary, // Change the label color
+          color: mainColor.tertiary,
           "&.Mui-focused": {
-            color: mainColor.highlight, // Change label color when focused
+            color: mainColor.highlight,
           },
         },
       },
     },
-    // 🎯 Target the InputAdornment component for the icon
     MuiInputAdornment: {
       styleOverrides: {
         root: {
-          color: mainColor.textSecondary, // Change the icon color
+          color: mainColor.tertiary,
         },
       },
     },
-    // If you need to change icon colors specifically
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          color: mainColor.textSecondary, // A universal approach for all icons
+          color: mainColor.textSecondary,
         },
       },
     },

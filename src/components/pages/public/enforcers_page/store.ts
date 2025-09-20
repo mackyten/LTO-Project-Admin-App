@@ -21,6 +21,9 @@ interface EnforcersStore {
   isDeleteConfirmationDialogOpen: boolean;
   setDeleteConfirmationDialog: (val: boolean) => void;
 
+  isAddModalOpen: boolean,
+  setAddModalOpen: (val: boolean) => void;
+
   // isDriverDialogOpen: boolean;
   // setDriverDialogOpen: (val: boolean) => void;
 
@@ -48,6 +51,9 @@ const useEnforcersStore = create<EnforcersStore>((set) => ({
   isDeleteConfirmationDialogOpen: false,
   setDeleteConfirmationDialog: (isDeleteConfirmationDialogOpen) =>
     set({ isDeleteConfirmationDialogOpen }),
+
+  isAddModalOpen: false,
+  setAddModalOpen: (isAddModalOpen) => set({ isAddModalOpen }),
 
   reset: () =>
     set({
