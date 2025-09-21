@@ -15,7 +15,7 @@ import { FirebaseCollections } from "../enums/collections";
 import type { EnforcerSchemaType } from "../components/pages/public/enforcers_page/schema";
 import { UserRoles } from "../enums/roles";
 import generatePassword from "../utils/password_generator";
-import generateEnforcerId from "../utils/enforcer_id_generator";
+import generateId from "../utils/id_generator";
 import generateQueryKeyPrefixes from "../utils/query_key_generator";
 import type { EnforcerCreateResponseModel } from "./response_models/enforcers_response_model";
 import { sendEmail } from "../utils/emailjs";
@@ -37,21 +37,24 @@ export const addEnforcer = async (
       // Account exists, check if already an enforcer
       const existingDoc = snapshot.docs[0];
       const existingData = existingDoc.data();
-      const roles = existingData.role || [];
+      const roles = existingData.roles || [];
 
       if (roles.includes(UserRoles.Enforcer)) {
         throw new Error("An account with this email already exists.");
+      }else if(roles.includes(UserRoles.Admin) || roles.includes(UserRoles.SuperAdmin)) {
+        // Admin or SuperAdmin exists, cannot add Enforcer
+        throw new Error("Cannot add Enforcer role to an Admin account.");
       } else {
-        // Add Enforcer role to existing account
+        // Add Enforcer roles to existing account
         const updatedRoles = [...roles, UserRoles.Enforcer];
-        await updateDoc(existingDoc.ref, { role: updatedRoles });
+        await updateDoc(existingDoc.ref, { roles: updatedRoles });
         return { isSuccess: true, message: existingDoc.id };
       }
     }
 
     // Account doesn't exist, create new enforcer
     const temporaryPassword = generatePassword();
-    const enforcerId = generateEnforcerId();
+    const enforcerId = generateId();
     const queryKeys = generateQueryKeyPrefixes(data.firstName);
     queryKeys.push(...generateQueryKeyPrefixes(data.lastName));
     if (data.middleName) {
@@ -61,7 +64,7 @@ export const addEnforcer = async (
     const docRef = await addDoc(collection(db, FirebaseCollections.users), {
       ...data,
       createdAt: Date.now(),
-      role: [UserRoles.Enforcer],
+      roles: [UserRoles.Enforcer],
       temporaryPassword: temporaryPassword,
       enforcerIdNumber: enforcerId,
       queryKeys: queryKeys,
@@ -102,7 +105,7 @@ export const deleteEnforcers = async (documentId: string): Promise<void> => {
     }
 
     const userData = userDoc.data();
-    const roles = userData.role || [];
+    const roles = userData.roles || [];
 
     if (roles.length === 1 && roles[0] === UserRoles.Enforcer) {
       // Only Enforcer role, delete the document permanently
@@ -111,7 +114,7 @@ export const deleteEnforcers = async (documentId: string): Promise<void> => {
     } else {
       // Has other roles, remove Enforcer role
       const updatedRoles = roles.filter((role: number) => role !== UserRoles.Enforcer);
-      await updateDoc(userRef, { role: updatedRoles });
+      await updateDoc(userRef, { roles: updatedRoles });
       console.log(`Enforcer role removed from user with ID ${documentId}.`);
     }
   } catch (e) {

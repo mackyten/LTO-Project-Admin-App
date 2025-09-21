@@ -15,7 +15,7 @@
  * Generate an enforcer ID.
  * @param date Optional Date to base the YYYYMM prefix on. Defaults to now (UTC).
  */
-export function generateEnforcerId(date: Date = new Date()): string {
+export function generateId(date: Date = new Date()): string {
     // Use UTC year/month to avoid timezone surprises
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -40,4 +40,4 @@ export function generateEnforcerId(date: Date = new Date()): string {
     return `${prefix}-${rand}`;
 }
 
-export default generateEnforcerId;
+export default generateId;

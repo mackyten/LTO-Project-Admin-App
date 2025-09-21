@@ -5,25 +5,25 @@ import {
   DialogContent,
   Typography,
 } from "@mui/material";
-import useViolationsStore from "../store";
 import { Transition } from "../../../../shared/transition";
-import { useDeleteEnforcer } from "../hooks";
 import { mainColor } from "../../../../../themes/colors";
+import useAdministratorsStore from "../store";
+import { useDeleteAdmin } from "../hooks";
 
 export const DeleteConfimationDialog: React.FC = () => {
-  const deleteEnforcer = useDeleteEnforcer();
+  const deleteAdmin = useDeleteAdmin();
   const {
     isDeleteConfirmationDialogOpen,
-    selectedEnforcer,
-    setSelectedEnforcer,
     setDeleteConfirmationDialog,
-  } = useViolationsStore();
+    selectedAdmin,
+    setSelectedAdmin,
+  } = useAdministratorsStore();
   const handleClose = () => {
     setDeleteConfirmationDialog(false);
-    setSelectedEnforcer(undefined);
+    setSelectedAdmin(null);
   };
   const handleDelete = () => {
-    deleteEnforcer.mutate(selectedEnforcer!.documentId!, {
+    deleteAdmin.mutate(selectedAdmin!.documentId!, {
       onSuccess: () => {
         handleClose();
       },
@@ -53,11 +53,13 @@ export const DeleteConfimationDialog: React.FC = () => {
             }}
             fontWeight={600}
           >
-            Delete {selectedEnforcer?.firstName} {selectedEnforcer?.lastName}?
+            Remove {selectedAdmin?.firstName} {selectedAdmin?.lastName} as an
+            administrator ?
           </Typography>
 
           <Typography>
-            You are about to delete this enforcer. This action cannot be undone.
+            You are about to remove this administrator. This action cannot be
+            undone.
           </Typography>
         </DialogContent>
 
@@ -66,7 +68,7 @@ export const DeleteConfimationDialog: React.FC = () => {
             Cancel
           </Button>
           <Button
-            loading={deleteEnforcer.isPending}
+            loading={deleteAdmin.isPending}
             variant="contained"
             sx={{
               backgroundColor: mainColor.accent,

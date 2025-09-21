@@ -88,7 +88,7 @@ export const getUsers = async ({
 
   try {
     const userRef = collection(db, "users");
-    const baseQuery = query(userRef, where("role", "array-contains", role));
+    const baseQuery = query(userRef, where("roles", "array-contains", role));
 
     // Always query by role only
     q = query(
@@ -133,3 +133,52 @@ export const getUsers = async ({
   console.log("users:", users);
   return { users, lastDoc: lastVisible, totalCount };
 };
+
+/**
+ * Queries the 'users' collection for a user with a specific UUID.
+ * @param uuid The UUID to search for.
+ * @returns A promise that resolves to a UserModel, or null if no matching user is found.
+ */
+export const getCurrentUser = async (
+  uuid: string
+): Promise<UserModel | null> => {
+  if (!uuid) {
+    console.error("UUID is required for the query.");
+    return null;
+  }
+
+  try {
+    // 1. Create a reference to the 'users' collection.
+    const usersCollection = collection(db, "users");
+
+    // 2. Build the query. We're looking for documents where the 'uuid' field
+    // is exactly equal to the provided uuid string.
+    const q = query(usersCollection, where("uuid", "==", uuid));
+
+    // 3. Execute the query and get the documents.
+    const querySnapshot = await getDocs(q);
+
+    // 4. Check if any documents were found.
+    if (querySnapshot.empty) {
+      console.log("No matching user found with that UUID.");
+      return null;
+    }
+
+    // 5. Get the first document from the result.
+    const doc = querySnapshot.docs[0];
+    const data = doc.data() as UserModel;
+
+    // 6. Map the Firestore document data to your UserModel, including the document ID.
+    const user: UserModel = {
+      ...data,
+    };
+    user.documentId = doc.id;
+
+    return user;
+  } catch (e) {
+    console.error("Error getting user by UUID: ", e);
+    return null;
+  }
+};
+
+
