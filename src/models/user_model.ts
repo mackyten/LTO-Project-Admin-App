@@ -2,7 +2,7 @@ import type { UserRoles } from "../enums/roles";
 import type { FirestoreBaseModel } from "./firestore_base_model";
 
 export interface UserModel extends FirestoreBaseModel {
-  documentId: string;
+  documentId?: string;
   uuid: string;
   firstName: string;
   lastName: string;
@@ -10,7 +10,7 @@ export interface UserModel extends FirestoreBaseModel {
   email: string;
   mobileNumber?: string;
   profilePictureUrl?: string;
-  role?: UserRoles;
+  roles: UserRoles[];
   queryKeys?: string[];
   temporaryPassword?: string;
 }

@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import {
   alpha,
   AppBar,
+  Avatar,
   Box,
   Divider,
   IconButton,
@@ -28,6 +29,7 @@ import {
 import { sideDrawerItems } from "./components/types";
 import { mainColor } from "../../../../themes/colors";
 import { useLogout } from "../../auth/hooks";
+import { useCurrentUser } from "./hooks";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 60;
@@ -35,6 +37,9 @@ const miniDrawerWidth = 60;
 const ProtectedLayout: React.FC = () => {
   const theme = useTheme();
   const logout = useLogout();
+
+  // Fetch and set current user
+  const currentUser = useCurrentUser();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [desktopOpen, setDesktopOpen] = React.useState(true);
@@ -261,14 +266,19 @@ const ProtectedLayout: React.FC = () => {
               Responsive drawer
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton
+
+            <Avatar
+              component="button"
               onClick={handleClick}
-              color="inherit"
-              aria-label="user profile"
-              edge="end"
-            >
-              <AccountCircleOutlined />
-            </IconButton>
+              src={currentUser?.data?.profilePictureUrl}
+              alt={currentUser?.data?.lastName}
+              sx={{
+                padding: 0,
+                margin: 0,
+                // width: "40px",
+                // height: "40px",
+              }}
+            />
 
             <Popover
               id={"account-popover"}
