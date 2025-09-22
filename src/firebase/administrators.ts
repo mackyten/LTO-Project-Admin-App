@@ -23,7 +23,6 @@ import generateId from "../utils/id_generator";
 import { generateQueryKeyPrefixes } from "../utils/query_key_generator";
 import generatePassword from "../utils/password_generator";
 import { sendEmail } from "../utils/emailjs";
-import { uuid } from "zod";
 
 interface GetAdministratorsParams {
   pageSize: number;
@@ -96,8 +95,8 @@ export const createAdministrator = async (
     | "createdAt"
     | "queryKeys"
     | "uuid"
-    | "idBadgePhoto"
-    | "profilePictureUrl "
+    | "idBadgePhotoUrl"
+    | "profilePictureUrl"
   >
 ): Promise<void> => {
   const usersRef = collection(db, FirebaseCollections.users);
@@ -160,7 +159,7 @@ export const createAdministrator = async (
       createdAt: new Date(),
       queryKeys,
       temporaryPassword,
-      idBadgePhoto: "",
+      idBadgePhotoUrl: "",
       profilePictureUrl: "",
     };
 

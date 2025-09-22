@@ -80,7 +80,6 @@ const EnforcerPage: React.FC = () => {
           // Change alignItems to flex-start or remove it for proper stretching
           // You could also set it to 'stretch'
           alignItems: "stretch",
-          border: "1px solid blue",
         }}
       >
         <Box
@@ -129,7 +128,6 @@ const EnforcerPage: React.FC = () => {
 
         <Box
           sx={{
-            border: "1px solid red",
             flex: 1,
             maxHeight: `calc(100vh - 350px)`,
             minHeight: `calc(100vh - 350px)`,

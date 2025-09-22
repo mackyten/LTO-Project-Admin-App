@@ -161,17 +161,19 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                   <TableCell>
                     <IconButton
                       ref={(el) => {
-                        anchorRefs.current[enforcer.documentId] = el;
+                        if (enforcer.documentId) {
+                          anchorRefs.current[enforcer.documentId] = el;
+                        }
                       }}
-                      id={`composition-button-${enforcer.documentId}`}
+                      id={`composition-button-${enforcer.documentId || enforcer.uuid}`}
                       aria-controls={
                         isOpen
-                          ? `composition-menu-${enforcer.documentId}`
+                          ? `composition-menu-${enforcer.documentId || enforcer.uuid}`
                           : undefined
                       }
                       aria-expanded={isOpen ? "true" : undefined}
                       aria-haspopup="true"
-                      onClick={() => handleToggle(enforcer.documentId)}
+                      onClick={() => handleToggle(enforcer.documentId || enforcer.uuid)}
                     >
                       <MoreVert
                         sx={{
