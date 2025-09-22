@@ -2,6 +2,10 @@ import {
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updateEmail,
+  updatePassword,
 } from "firebase/auth";
 import type { LoginSchemaType } from "../components/pages/auth/schema";
 import { auth } from "../firebase";
@@ -76,3 +80,88 @@ export const loginUser = async (credentials: LoginSchemaType) => {
     }
   }
 };
+
+/**
+ * Reauthenticate the current user with their password
+ * @param password - The user's current password
+ * @returns Promise that resolves when reauthentication is successful
+ */
+export const reauthenticateUser = async (password: string): Promise<void> => {
+  const user = auth.currentUser;
+  
+  if (!user || !user.email) {
+    throw new Error("No user is currently logged in");
+  }
+
+  try {
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+  } catch (error) {
+    const authError = error as { code?: string; message?: string };
+    
+    if (authError.code === "auth/wrong-password" || authError.code === "auth/invalid-credential") {
+      throw new Error("The password you entered is incorrect");
+    } else if (authError.code === "auth/too-many-requests") {
+      throw new Error("Too many failed attempts. Please try again later");
+    } else {
+      throw new Error(`Reauthentication failed: ${authError.message || "Unknown error"}`);
+    }
+  }
+};
+
+/**
+ * Update the current user's email address
+ * @param newEmail - The new email address
+ * @returns Promise that resolves when email is updated successfully
+ */
+export const updateUserEmail = async (newEmail: string): Promise<void> => {
+  const user = auth.currentUser;
+  
+  if (!user) {
+    throw new Error("No user is currently logged in");
+  }
+
+  try {
+    await updateEmail(user, newEmail);
+  } catch (error) {
+    const authError = error as { code?: string; message?: string };
+    
+    if (authError.code === "auth/email-already-in-use") {
+      throw new Error("This email address is already in use by another account");
+    } else if (authError.code === "auth/invalid-email") {
+      throw new Error("The email address is not valid");
+    } else if (authError.code === "auth/requires-recent-login") {
+      throw new Error("This operation requires recent authentication. Please log in again");
+    } else {
+      throw new Error(`Failed to update email: ${authError.message || "Unknown error"}`);
+    }
+  }
+};
+
+/**
+ * Update the current user's password
+ * @param newPassword - The new password
+ * @returns Promise that resolves when password is updated successfully
+ */
+export const updateUserPassword = async (newPassword: string): Promise<void> => {
+  const user = auth.currentUser;
+  
+  if (!user) {
+    throw new Error("No user is currently logged in");
+  }
+
+  try {
+    await updatePassword(user, newPassword);
+  } catch (error) {
+    const authError = error as { code?: string; message?: string };
+    
+    if (authError.code === "auth/weak-password") {
+      throw new Error("The password is too weak. Please choose a stronger password");
+    } else if (authError.code === "auth/requires-recent-login") {
+      throw new Error("This operation requires recent authentication. Please log in again");
+    } else {
+      throw new Error(`Failed to update password: ${authError.message || "Unknown error"}`);
+    }
+  }
+};
+

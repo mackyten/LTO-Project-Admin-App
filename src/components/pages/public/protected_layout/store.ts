@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import type { UserModel } from '../../../../models/user_model';
+import type { AdministratorModel } from '../../../../models/administrator_model';
 
 interface UserState {
-  currentUser: UserModel | null;
-  setCurrentUser: (user: UserModel | null) => void;
+  currentUser: AdministratorModel | null;
+  setCurrentUser: (user: AdministratorModel | null) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({

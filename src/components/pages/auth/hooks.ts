@@ -1,4 +1,6 @@
-import { logoutUser } from "../../../firebase/auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { logoutUser, loginUser } from "../../../firebase/auth";
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -15,12 +17,6 @@ export const useLogout = () => {
     },
   });
 };
-// src/hooks/useLogin.ts
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../../firebase/auth";
-
 
 export const useLogin = () => {
   const queryClient = useQueryClient();

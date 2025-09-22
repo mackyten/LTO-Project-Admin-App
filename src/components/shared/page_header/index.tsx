@@ -2,8 +2,15 @@ import { Box, Grid, Typography } from "@mui/material";
 import type React from "react";
 import { SearchField } from "../search_field";
 
-interface IPageHeader {
+export type PageHeaderVariant = "default" | "simple";
+
+interface IPageHeaderBase {
   title: string;
+  variant?: PageHeaderVariant;
+}
+
+interface IPageHeaderWithSearch extends IPageHeaderBase {
+  variant?: "default";
   totalCount: number;
   totalCountLabel: string;
   searchQuery: string;
@@ -13,20 +20,25 @@ interface IPageHeader {
   handleSearch: () => void;
 }
 
-export const PageHeader: React.FC<IPageHeader> = ({
-  totalCount,
-  title,
-  searchQuery,
-  totalCountLabel,
-  searchPlaceholder,
-  setSearchQuery,
-  handleSearchKeyDown,
-  handleSearch,
-}) => {
+interface IPageHeaderSimple extends IPageHeaderBase {
+  variant: "simple";
+  totalCount?: never;
+  totalCountLabel?: never;
+  searchQuery?: never;
+  searchPlaceholder?: never;
+  setSearchQuery?: never;
+  handleSearchKeyDown?: never;
+  handleSearch?: never;
+}
+
+type IPageHeader = IPageHeaderWithSearch | IPageHeaderSimple;
+
+export const PageHeader: React.FC<IPageHeader> = (props) => {
+  const { title, variant = "default" } = props;
+
   return (
     <Box sx={{
       width: "100%",
-
     }}>
       <Typography
         sx={{
@@ -41,39 +53,42 @@ export const PageHeader: React.FC<IPageHeader> = ({
       >
         {title}
       </Typography>
-      <Grid
-        rowGap={1}
-        container
-        sx={{
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
+      
+      {variant === "default" && (
         <Grid
-          size={{
-            xs: 12,
-            sm: 6,
+          rowGap={1}
+          container
+          sx={{
+            alignItems: "center",
+            mb: 2,
           }}
         >
-          <Typography>
-            {totalCountLabel}: {totalCount}
-          </Typography>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
+            <Typography>
+              {(props as IPageHeaderWithSearch).totalCountLabel}: {(props as IPageHeaderWithSearch).totalCount}
+            </Typography>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <SearchField
+              searchPlaceholder={(props as IPageHeaderWithSearch).searchPlaceholder}
+              searchQuery={(props as IPageHeaderWithSearch).searchQuery}
+              setSearchQuery={(props as IPageHeaderWithSearch).setSearchQuery}
+              handleSearchKeyDown={(props as IPageHeaderWithSearch).handleSearchKeyDown}
+              handleSearch={(props as IPageHeaderWithSearch).handleSearch}
+            />
+          </Grid>
         </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            md: 6,
-          }}
-        >
-          <SearchField
-            searchPlaceholder={searchPlaceholder}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSearchKeyDown={handleSearchKeyDown}
-            handleSearch={handleSearch}
-          />
-        </Grid>
-      </Grid>
+      )}
     </Box>
   );
 };

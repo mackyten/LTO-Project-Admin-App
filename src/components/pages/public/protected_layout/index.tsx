@@ -21,7 +21,6 @@ import ProtectedRoute from "../../../router/protected_routes";
 import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
 import {
-  AccountCircleOutlined,
   ArrowBackIos,
   ArrowForwardIos,
   Logout as LogoutIcon,
@@ -79,65 +78,7 @@ const ProtectedLayout: React.FC = () => {
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         <List>
           {sideDrawerItems
-            .filter(
-              (x) => x.title !== "Administrators" && x.title !== "Account"
-            )
-            .map((item) => {
-              const isActive = location.pathname === item.route;
-              return (
-                <ListItem
-                  id={item.title}
-                  key={item.route}
-                  disablePadding
-                  sx={
-                    isActive
-                      ? {
-                          border: "1px solid",
-                          borderColor: "background.default",
-                          borderRadius: "8px",
-                          backgroundColor: alpha(
-                            theme.palette.background.default,
-                            0.1
-                          ),
-                        }
-                      : {}
-                  }
-                >
-                  <ListItemButton
-                    onClick={() => handleNavigate(item.route)}
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: desktopOpen ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: desktopOpen ? 3 : "auto",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.title}
-                      sx={{
-                        opacity: desktopOpen || mobileOpen ? 1 : 0,
-                        color: "background.default",
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-        </List>
-        <Divider />
-        <List>
-          {sideDrawerItems
-            .filter(
-              (x) => x.title === "Administrators" || x.title === "Account"
-            )
+            .filter((x) => x.title !== "Account")
             .map((item) => {
               const isActive = location.pathname === item.route;
               return (
@@ -189,6 +130,61 @@ const ProtectedLayout: React.FC = () => {
             })}
         </List>
       </Box>
+
+      <List>
+        {sideDrawerItems
+          .filter((x) => x.title === "Account")
+          .map((item) => {
+            const isActive = location.pathname === item.route;
+            return (
+              <ListItem
+                id={item.title}
+                key={item.route}
+                disablePadding
+                sx={
+                  isActive
+                    ? {
+                        border: "1px solid",
+                        borderColor: "background.default",
+                        borderRadius: "8px",
+                        backgroundColor: alpha(
+                          theme.palette.background.default,
+                          0.1
+                        ),
+                      }
+                    : {}
+                }
+              >
+                <ListItemButton
+                  onClick={() => handleNavigate(item.route)}
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: desktopOpen ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: desktopOpen ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.title}
+                    sx={{
+                      opacity: desktopOpen || mobileOpen ? 1 : 0,
+                      color: "background.default",
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+      </List>
+
       {!mobileOpen && (
         <ListItem disablePadding sx={{ mt: "auto" }}>
           <ListItemButton
