@@ -186,3 +186,51 @@ export const updateUserPassword = async (
     }
   }
 };
+
+/**
+ * Reauthenticate the current user and change their password
+ * @param currentPassword - The user's current password for reauthentication
+ * @param newPassword - The new password to set
+ * @returns Promise that resolves when reauthentication and password change are successful
+ */
+export const reauthenticateAndChangePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<void> => {
+  const user = auth.currentUser;
+
+  if (!user || !user.email) {
+    throw new Error("No user is currently logged in");
+  }
+
+  try {
+    // First, reauthenticate the user with their current password
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+
+    // After successful reauthentication, update the password
+    await updatePassword(user, newPassword);
+  } catch (error) {
+    const authError = error as { code?: string; message?: string };
+
+    // Handle reauthentication errors
+    if (
+      authError.code === "auth/wrong-password" ||
+      authError.code === "auth/invalid-credential"
+    ) {
+      throw new Error("The current password you entered is incorrect");
+    } else if (authError.code === "auth/too-many-requests") {
+      throw new Error("Too many failed attempts. Please try again later");
+    }
+    // Handle password update errors
+    else if (authError.code === "auth/weak-password") {
+      throw new Error(
+        "The new password is too weak. Please choose a stronger password"
+      );
+    } else {
+      throw new Error(
+        `Failed to change password: ${authError.message || "Unknown error"}`
+      );
+    }
+  }
+};

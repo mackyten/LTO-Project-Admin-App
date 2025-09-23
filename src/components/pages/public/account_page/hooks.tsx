@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { updateUserAccount, getCurrentUserData } from '../../../../firebase/account';
+import { reauthenticateAndChangePassword } from '../../../../firebase/auth';
 import type { UpdateAccountParams } from '../../../../firebase/account';
 import type { AdministratorModel } from '../../../../models/administrator_model';
 import { useUserStore } from '../protected_layout/store';
@@ -118,19 +119,53 @@ export const useRefreshCurrentUser = () => {
 };
 
 /**
+ * Hook to reauthenticate and change password
+ */
+export const useReauthenticateAndChangePassword = () => {
+  return useMutation({
+    mutationFn: async ({ 
+      currentPassword, 
+      newPassword 
+    }: { 
+      currentPassword: string; 
+      newPassword: string; 
+    }) => {
+      await reauthenticateAndChangePassword(currentPassword, newPassword);
+    },
+    retry: (failureCount, error) => {
+      // Don't retry for authentication errors or weak password errors
+      const errorMessage = error?.message?.toLowerCase() || '';
+      if (errorMessage.includes('password') || 
+          errorMessage.includes('credential') ||
+          errorMessage.includes('weak') ||
+          errorMessage.includes('too many')) {
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000), // Exponential backoff
+  });
+};
+
+/**
  * Hook to get loading and error states for account operations
  */
 export const useAccountState = () => {
   const { data: currentUser, isLoading, error, isError } = useAccountCurrentUser();
   const updateMutation = useUpdateAccount();
+  const changePasswordMutation = useReauthenticateAndChangePassword();
   
   return {
     currentUser,
-    isLoading: isLoading || updateMutation.isPending,
+    isLoading: isLoading || updateMutation.isPending || changePasswordMutation.isPending,
     isUpdating: updateMutation.isPending,
-    isError: isError || updateMutation.isError,
-    error: error || updateMutation.error,
+    isChangingPassword: changePasswordMutation.isPending,
+    isError: isError || updateMutation.isError || changePasswordMutation.isError,
+    error: error || updateMutation.error || changePasswordMutation.error,
     updateAccount: updateMutation.mutate,
     updateAccountAsync: updateMutation.mutateAsync,
+    changePassword: changePasswordMutation.mutate,
+    changePasswordAsync: changePasswordMutation.mutateAsync,
   };
 };
