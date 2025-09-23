@@ -88,7 +88,7 @@ export const loginUser = async (credentials: LoginSchemaType) => {
  */
 export const reauthenticateUser = async (password: string): Promise<void> => {
   const user = auth.currentUser;
-  
+
   if (!user || !user.email) {
     throw new Error("No user is currently logged in");
   }
@@ -98,42 +98,56 @@ export const reauthenticateUser = async (password: string): Promise<void> => {
     await reauthenticateWithCredential(user, credential);
   } catch (error) {
     const authError = error as { code?: string; message?: string };
-    
-    if (authError.code === "auth/wrong-password" || authError.code === "auth/invalid-credential") {
+
+    if (
+      authError.code === "auth/wrong-password" ||
+      authError.code === "auth/invalid-credential"
+    ) {
       throw new Error("The password you entered is incorrect");
     } else if (authError.code === "auth/too-many-requests") {
       throw new Error("Too many failed attempts. Please try again later");
     } else {
-      throw new Error(`Reauthentication failed: ${authError.message || "Unknown error"}`);
+      throw new Error(
+        `Reauthentication failed: ${authError.message || "Unknown error"}`
+      );
     }
   }
 };
 
 /**
- * Update the current user's email address
+ * Update the current user's email
  * @param newEmail - The new email address
  * @returns Promise that resolves when email is updated successfully
  */
 export const updateUserEmail = async (newEmail: string): Promise<void> => {
   const user = auth.currentUser;
-  
+
   if (!user) {
     throw new Error("No user is currently logged in");
   }
 
   try {
-    await updateEmail(user, newEmail);
+     await updateEmail(user, newEmail);
   } catch (error) {
     const authError = error as { code?: string; message?: string };
-    
     if (authError.code === "auth/email-already-in-use") {
-      throw new Error("This email address is already in use by another account");
+      throw new Error(
+        "This email address is already in use by another account"
+      );
     } else if (authError.code === "auth/invalid-email") {
       throw new Error("The email address is not valid");
     } else if (authError.code === "auth/requires-recent-login") {
-      throw new Error("This operation requires recent authentication. Please log in again");
+      throw new Error(
+        "This operation requires recent authentication. Please log in again"
+      );
+    } else if (authError.code === "auth/operation-not-allowed") {
+      throw new Error(
+        "Email changes require verification. Please contact an administrator or check your Firebase project settings to enable direct email updates for admin users."
+      );
     } else {
-      throw new Error(`Failed to update email: ${authError.message || "Unknown error"}`);
+      throw new Error(
+        `Failed to update email: ${authError.message || "Unknown error"}`
+      );
     }
   }
 };
@@ -143,9 +157,11 @@ export const updateUserEmail = async (newEmail: string): Promise<void> => {
  * @param newPassword - The new password
  * @returns Promise that resolves when password is updated successfully
  */
-export const updateUserPassword = async (newPassword: string): Promise<void> => {
+export const updateUserPassword = async (
+  newPassword: string
+): Promise<void> => {
   const user = auth.currentUser;
-  
+
   if (!user) {
     throw new Error("No user is currently logged in");
   }
@@ -154,14 +170,19 @@ export const updateUserPassword = async (newPassword: string): Promise<void> => 
     await updatePassword(user, newPassword);
   } catch (error) {
     const authError = error as { code?: string; message?: string };
-    
+
     if (authError.code === "auth/weak-password") {
-      throw new Error("The password is too weak. Please choose a stronger password");
+      throw new Error(
+        "The password is too weak. Please choose a stronger password"
+      );
     } else if (authError.code === "auth/requires-recent-login") {
-      throw new Error("This operation requires recent authentication. Please log in again");
+      throw new Error(
+        "This operation requires recent authentication. Please log in again"
+      );
     } else {
-      throw new Error(`Failed to update password: ${authError.message || "Unknown error"}`);
+      throw new Error(
+        `Failed to update password: ${authError.message || "Unknown error"}`
+      );
     }
   }
 };
-

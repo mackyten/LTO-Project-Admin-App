@@ -7,12 +7,14 @@ import type { AccountData } from "./types";
 interface AccountDisplayViewProps {
   accountData: AccountData;
   idBadgePhoto: File | null;
+  idBadgePhotoUrl?: string;
   onIdBadgePhotoChange: (file: File | null) => void;
 }
 
 export const AccountDisplayView: React.FC<AccountDisplayViewProps> = ({
   accountData,
   idBadgePhoto,
+  idBadgePhotoUrl,
   onIdBadgePhotoChange,
 }) => {
   return (
@@ -62,6 +64,7 @@ export const AccountDisplayView: React.FC<AccountDisplayViewProps> = ({
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <ImageUpload
             file={idBadgePhoto}
+            existingUrl={idBadgePhotoUrl}
             onFileChange={onIdBadgePhotoChange}
             label=""
             isEditing={false}

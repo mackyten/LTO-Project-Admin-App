@@ -37,6 +37,21 @@ export const useUpdateAccount = () => {
 
   return useMutation({
     mutationFn: updateUserAccount,
+    retry: (failureCount, error) => {
+      // Retry up to 2 times for network errors or temporary failures
+      if (failureCount < 2) {
+        const errorMessage = error?.message?.toLowerCase() || '';
+        // Retry for network errors, timeouts, or cloudinary issues
+        if (errorMessage.includes('network') || 
+            errorMessage.includes('timeout') || 
+            errorMessage.includes('cloudinary') ||
+            errorMessage.includes('fetch')) {
+          return true;
+        }
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // Exponential backoff
     onMutate: async (params: UpdateAccountParams) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ACCOUNT_QUERY_KEYS.currentUser });
@@ -77,9 +92,7 @@ export const useUpdateAccount = () => {
         queryClient.setQueryData(ACCOUNT_QUERY_KEYS.currentUser, context.previousUser);
         setCurrentUser(context.previousUser);
       }
-    },
-    onSettled: () => {
-      // Always refetch after error or success to ensure we have the latest data
+      // Only invalidate on error to refetch fresh data
       queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.currentUser });
     },
   });

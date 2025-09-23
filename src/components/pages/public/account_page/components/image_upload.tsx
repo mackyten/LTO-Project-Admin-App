@@ -9,6 +9,7 @@ import { PhotoCamera, Delete } from "@mui/icons-material";
 
 interface ImageUploadProps {
   file: File | null;
+  existingUrl?: string;
   onFileChange: (file: File | null) => void;
   label: string;
   isEditing: boolean;
@@ -17,6 +18,7 @@ interface ImageUploadProps {
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
   file,
+  existingUrl,
   onFileChange,
   label,
   isEditing,
@@ -33,6 +35,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       setPreview(null);
     }
   }, [file]);
+
+  // Determine what image to display: preview (new file) > existing URL > null
+  const displayImage = preview || existingUrl || null;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0] || null;
@@ -79,7 +84,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         onClick={handleContainerClick}
       >
         <Avatar
-          src={preview || undefined}
+          src={displayImage || undefined}
           sx={{
             width: size,
             height: size,
@@ -91,7 +96,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           }}
           variant="rounded"
         >
-          {!preview && <PhotoCamera sx={{ fontSize: 40, color: "grey.400" }} />}
+          {!displayImage && <PhotoCamera sx={{ fontSize: 40, color: "grey.400" }} />}
         </Avatar>
 
         {/* Hidden file input */}
@@ -104,7 +109,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         />
 
         {/* Remove button overlay */}
-        {isEditing && preview && (
+        {isEditing && displayImage && (
           <IconButton
             color="error"
             aria-label="remove image"
@@ -139,7 +144,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             transition: 'opacity 0.2s ease-in-out',
           }}
         >
-          {preview ? 'Tap to change photo' : 'Tap to choose photo'}
+          {displayImage ? 'Tap to change photo' : 'Tap to choose photo'}
         </Typography>
       </Box>
     </Box>
