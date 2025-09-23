@@ -4,6 +4,7 @@ import { ImageUpload } from "./image_upload";
 
 interface AccountHeaderProps {
   profilePicture: File | null;
+  profilePictureUrl?: string;
   onProfilePictureChange: (file: File | null) => void;
   isEditing: boolean;
   firstName: string;
@@ -14,6 +15,7 @@ interface AccountHeaderProps {
 
 export const AccountHeader: React.FC<AccountHeaderProps> = ({
   profilePicture,
+  profilePictureUrl,
   onProfilePictureChange,
   isEditing,
   firstName,
@@ -33,6 +35,7 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({
     >
       <ImageUpload
         file={profilePicture}
+        existingUrl={profilePictureUrl}
         onFileChange={onProfilePictureChange}
         label="Profile Picture"
         isEditing={isEditing}

@@ -9,6 +9,7 @@ interface AccountEditFormProps {
   control: Control<AccountData>;
   errors: FieldErrors<AccountData>;
   idBadgePhoto: File | null;
+  idBadgePhotoUrl?: string;
   onIdBadgePhotoChange: (file: File | null) => void;
   isEditing: boolean;
 }
@@ -17,6 +18,7 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({
   control,
   errors,
   idBadgePhoto,
+  idBadgePhotoUrl,
   onIdBadgePhotoChange,
   isEditing,
 }) => {
@@ -151,6 +153,7 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({
       <Grid size={12} sx={{ display: "flex", justifyContent: "center" }}>
         <ImageUpload
           file={idBadgePhoto}
+          existingUrl={idBadgePhotoUrl}
           onFileChange={onIdBadgePhotoChange}
           label="ID Badge Photo"
           isEditing={isEditing}
