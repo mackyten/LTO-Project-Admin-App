@@ -8,7 +8,7 @@ export interface PaymentModel extends FirestoreBaseModel {
   violatorFullName: string;
   amount: number;
   paidAt: Date;
-  paidById: string;
+  paidById: string; // uuid of the user who made the payment
   paidBy?: UserModel;
   paymentMethod: "Credit Card" | "Debit Card" | "Online Banking" | "Cash";
   referenceNumber: string;
