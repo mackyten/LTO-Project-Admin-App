@@ -13,4 +13,10 @@ export interface ReportModel {
   violations: string[];
   createdAt?: Date | null;
   draftId?: string | null;
+  status: "Overturned" | "Submitted" | "Cancelled";
+  paymentStatus:
+    | "Pending"
+    | "Completed"
+    | "Refunded"
+    | "Cancelled";
 }
