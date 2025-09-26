@@ -22,7 +22,7 @@ export const Pagination: React.FC<IPagination> = ({
         variant="body2"
         sx={TableStyleProps.paginationContainer.dataNumber}
       >
-        {`Showing ${dataSeen} of ${totalCount} reports`}
+        {`Showing ${dataSeen} of ${totalCount} result`}
       </Typography>
       <Button
         onClick={onLoadMore}

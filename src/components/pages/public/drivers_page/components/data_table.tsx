@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Box,
   ClickAwayListener,
   Grow,
   IconButton,
@@ -18,31 +17,21 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
-import {
-  AccessTime,
-  CheckCircle,
-  Delete,
-  MoreVert,
-  Person,
-} from "@mui/icons-material";
+import { MoreVert, Person } from "@mui/icons-material";
 import { useRef } from "react";
 import { mainColor } from "../../../../../themes/colors";
-import useEnforcersStore from "../store";
-import type { EnforcerModel } from "../../../../../models/enforcer_model";
+
+import type { DriverModel } from "../../../../../models/driver_model";
+import useDriversStore from "../store";
 
 interface IDataTable {
-  enforcers: EnforcerModel[];
+  drivers: DriverModel[];
 }
-export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
+export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
   const anchorRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
-  const {
-    openMenuId,
-    setOpenMenuId,
-    setDeleteConfirmationDialog,
-    setSelectedEnforcer,
-    setProfileModalOpen,
-  } = useEnforcersStore();
+  const { openMenuId, setOpenMenuId, setSelectedDriver, setProfileModalOpen } =
+    useDriversStore();
 
   const handleToggle = (reportId: string) => {
     setOpenMenuId(openMenuId === reportId ? null : reportId);
@@ -67,37 +56,11 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
     setOpenMenuId(null);
   };
 
-  const handleDeleteReport = (enforcer: EnforcerModel) => {
-    setSelectedEnforcer(enforcer);
-    setDeleteConfirmationDialog(true);
-  };
-
-  const handleViewEnforcerProfile = (enforcer: EnforcerModel) => {
-    setSelectedEnforcer(enforcer);
+  const handleViewDriverProfile = (driver: DriverModel) => {
+    setSelectedDriver(driver);
     setProfileModalOpen(true);
   };
 
-  const getEnforcerStatus = (uuid: string | null) => {
-    if (uuid === null) {
-      return (
-        <Box display="flex" alignItems="center">
-          <AccessTime sx={{ color: "orange" }} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
-            Pending
-          </Typography>
-        </Box>
-      );
-    } else {
-      return (
-        <Box display="flex" alignItems="center">
-          <CheckCircle sx={{ color: "green" }} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
-            Registered
-          </Typography>
-        </Box>
-      );
-    }
-  };
   return (
     <TableContainer component={Paper} sx={TableStyleProps.container}>
       <Table
@@ -110,13 +73,7 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
         <TableHead sx={TableStyleProps.tableHead}>
           <TableRow sx={TableStyleProps.tableRow}>
             <TableCell sx={TableStyleProps.tableHeadLeft}>#</TableCell>
-            <TableCell
-              sx={{
-                width: "300px",
-              }}
-            >
-              ID
-            </TableCell>
+
             <TableCell
               sx={{
                 width: "300px",
@@ -126,54 +83,59 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
               Full Name
             </TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>Plate Number</TableCell>
             <TableCell sx={TableStyleProps.tableHeadRight} width={50}>
               Actions
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {enforcers.length === 0 ? (
+          {drivers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} align="center">
-                No reports found.
+                No driver found.
               </TableCell>
             </TableRow>
           ) : (
-            enforcers.map((enforcer, index) => {
-              const isOpen = openMenuId === enforcer.documentId;
+            drivers.map((driver, index) => {
+              const isOpen = openMenuId === driver.documentId;
               return (
-                <TableRow key={enforcer.documentId}>
+                <TableRow key={driver.documentId}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{enforcer.enforcerIdNumber || "N/A"}</TableCell>
                   <TableCell sx={{ width: 50, paddingRight: 0 }}>
                     <Avatar
-                      src={enforcer.profilePictureUrl}
-                      alt={enforcer.lastName}
+                      src={driver.profilePictureUrl}
+                      alt={driver.lastName}
                       sx={{ width: "40px", height: "40px" }}
                     />
                   </TableCell>
                   <TableCell>
-                    {enforcer.lastName}, {enforcer.firstName}
+                    {driver.lastName}, {driver.firstName}
                   </TableCell>
-                  <TableCell>{enforcer.email}</TableCell>
-                  <TableCell>{getEnforcerStatus(enforcer.uuid)}</TableCell>
+                  <TableCell>{driver.email}</TableCell>
+                  <TableCell>{driver.plateNumber || "N/A"}</TableCell>
                   <TableCell>
                     <IconButton
                       ref={(el) => {
-                        if (enforcer.documentId) {
-                          anchorRefs.current[enforcer.documentId] = el;
+                        if (driver.documentId) {
+                          anchorRefs.current[driver.documentId] = el;
                         }
                       }}
-                      id={`composition-button-${enforcer.documentId || enforcer.uuid}`}
+                      id={`composition-button-${
+                        driver.documentId || driver.uuid
+                      }`}
                       aria-controls={
                         isOpen
-                          ? `composition-menu-${enforcer.documentId || enforcer.uuid}`
+                          ? `composition-menu-${
+                              driver.documentId || driver.uuid
+                            }`
                           : undefined
                       }
                       aria-expanded={isOpen ? "true" : undefined}
                       aria-haspopup="true"
-                      onClick={() => handleToggle(enforcer.documentId || enforcer.uuid)}
+                      onClick={() =>
+                        handleToggle(driver.documentId || driver.uuid)
+                      }
                     >
                       <MoreVert
                         sx={{
@@ -183,9 +145,7 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                     </IconButton>
                     <Popper
                       open={isOpen}
-                      anchorEl={
-                        anchorRefs.current[enforcer.documentId ?? index]
-                      }
+                      anchorEl={anchorRefs.current[driver.documentId ?? index]}
                       role={undefined}
                       placement="bottom-start"
                       transition
@@ -206,8 +166,8 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                             <ClickAwayListener onClickAway={handleClose}>
                               <MenuList
                                 autoFocusItem={isOpen}
-                                id={`composition-menu-${enforcer.documentId}`}
-                                aria-labelledby={`composition-button-${enforcer.documentId}`}
+                                id={`composition-menu-${driver.documentId}`}
+                                aria-labelledby={`composition-button-${driver.documentId}`}
                                 onKeyDown={handleListKeyDown}
                                 sx={{
                                   color: "secondary.main",
@@ -215,7 +175,7 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                               >
                                 <MenuItem
                                   onClick={() =>
-                                    handleViewEnforcerProfile(enforcer)
+                                    handleViewDriverProfile(driver)
                                   }
                                 >
                                   <Person
@@ -226,19 +186,6 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
 
                                   <Typography variant="body2" sx={{ ml: 1 }}>
                                     View Profile
-                                  </Typography>
-                                </MenuItem>
-
-                                <MenuItem
-                                  onClick={() => handleDeleteReport(enforcer)}
-                                >
-                                  <Delete
-                                    sx={{
-                                      color: "error.main",
-                                    }}
-                                  />
-                                  <Typography variant="body2" sx={{ ml: 1 }}>
-                                    Delete
                                   </Typography>
                                 </MenuItem>
                               </MenuList>

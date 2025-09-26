@@ -5,6 +5,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import { DirectionsCar } from "@mui/icons-material";
 
 export type DraweItemModel = {
   title: string;
@@ -27,6 +28,11 @@ export const sideDrawerItems: DraweItemModel[] = [
     title: "Enforcers",
     route: "/app/enforcers",
     icon: <GroupIcon />,
+  },
+  {
+    title: "Drivers",
+    route: "/app/drivers",
+    icon: <DirectionsCar />,
   },
   {
     title: "Payments",

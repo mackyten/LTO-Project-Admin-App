@@ -107,14 +107,35 @@ const OverviewCards: React.FC = () => {
       {cards.map((card, index) => (
         <Box key={index} sx={{ flex: "1 1 200px", minWidth: "200px" }}>
           <Card sx={{ height: "100%" }}>
-            <CardContent>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                {card.icon}
-                <Typography variant="h6" sx={{ ml: 1, color: card.color }}>
+            <CardContent sx={{
+              height: "71%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "start",
+                  mb: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    mt: 0.5,
+                  }}
+                >
+                  {card.icon}
+                </Box>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ ml: 1, mt: 0.5, color: card.color, textAlign: "start" }}
+                >
                   {card.title}
                 </Typography>
               </Box>
-              <Typography variant="h4" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold" textAlign="center">
                 {card.value}
               </Typography>
             </CardContent>

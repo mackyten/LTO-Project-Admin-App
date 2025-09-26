@@ -63,7 +63,7 @@ export const addEnforcer = async (
 
     const docRef = await addDoc(collection(db, FirebaseCollections.users), {
       ...data,
-      createdAt: Date.now(),
+      createdAt: new Date(),
       roles: [UserRoles.Enforcer],
       temporaryPassword: temporaryPassword,
       enforcerIdNumber: enforcerId,

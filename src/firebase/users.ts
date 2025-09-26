@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase"; // Assuming you have your Firebase instance here
 import type { DriverModel } from "../models/driver_model";
-import type { UserRoles } from "../enums/roles";
+import { UserRoles } from "../enums/roles";
 import type { UserModel } from "../models/user_model";
 
 /**
@@ -115,9 +115,28 @@ export const getUsers = async ({
 
     if (searchQuery) {
       const search = searchQuery.toLocaleUpperCase();
-      users = allUsers.filter(user =>
-        Array.isArray(user.queryKeys) && user.queryKeys.includes(search)
-      ).slice(0, pageSize);
+      
+      if (role === UserRoles.Driver) {
+        // For drivers, first search by plateNumber (case-insensitive exact match)
+        let driversByPlateNumber = allUsers.filter(user => {
+          const driver = user as DriverModel;
+          return driver.plateNumber && driver.plateNumber.toLocaleUpperCase() === search;
+        });
+
+        // If no results from plateNumber search, fall back to queryKeys search
+        if (driversByPlateNumber.length === 0) {
+          driversByPlateNumber = allUsers.filter(user =>
+            Array.isArray(user.queryKeys) && user.queryKeys.includes(search)
+          );
+        }
+
+        users = driversByPlateNumber.slice(0, pageSize);
+      } else {
+        // For other roles, search by queryKeys
+        users = allUsers.filter(user =>
+          Array.isArray(user.queryKeys) && user.queryKeys.includes(search)
+        ).slice(0, pageSize);
+      }
     } else {
       users = allUsers.slice(0, pageSize);
     }

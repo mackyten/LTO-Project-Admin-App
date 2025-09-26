@@ -10,6 +10,7 @@ const HomePage = lazy(() => import("../pages/public/home_page/home_page"));
 const ViolationsPage = lazy(() => import("../pages/public/violations_page"));
 const EnforcersPage = lazy(() => import("../pages/public/enforcers_page"));
 const PaymentsPage = lazy(() => import("../pages/public/payments_page"));
+const DriversPage = lazy(() => import("../pages/public/drivers_page"));
 const AdministratorsPage = lazy(
   () => import("../pages/public/administrators_page")
 );
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
           {
             path: "enforcers",
             element: withSuspense(<EnforcersPage />),
+          },
+          {
+            path: "drivers",
+            element: withSuspense(<DriversPage />),
           },
           {
             path: "payments",

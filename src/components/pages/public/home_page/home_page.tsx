@@ -12,8 +12,7 @@ import ViolationsPerMonthChart from "./components/violations_per_month_chart";
 import PaidVsUnpaidChart from "./components/paid_vs_unpaid_chart";
 import OverturnedViolations from "./components/overturned_violations";
 import TodaysPayments from "./components/todays_payments";
-
-
+import SearchBar from "./components/search_bar";
 
 // Main Dashboard Component
 const HomePage: React.FC = () => {
@@ -42,6 +41,7 @@ const HomePage: React.FC = () => {
           Refresh Data
         </Button>
       </Box>
+      <SearchBar />
 
       {/* Overview Cards - Requirements 1-4 */}
       <Box sx={{ mb: 4 }}>

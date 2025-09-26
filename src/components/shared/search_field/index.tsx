@@ -13,6 +13,7 @@ import { textFieldLight } from "../../../themes/textfield";
 interface ISearchField {
   searchQuery: string;
   searchPlaceholder: string;
+  handleClear?: () => void;
   setSearchQuery: (value: string) => void;
   handleSearchKeyDown: (event: React.KeyboardEvent<Element>) => void;
   handleSearch: () => void;
@@ -21,6 +22,7 @@ interface ISearchField {
 export const SearchField: React.FC<ISearchField> = ({
   searchQuery,
   searchPlaceholder,
+  handleClear,
   setSearchQuery,
   handleSearchKeyDown,
   handleSearch,
@@ -28,6 +30,7 @@ export const SearchField: React.FC<ISearchField> = ({
   return (
     <Box
       sx={{
+        width: "100%",
         display: "flex",
         flexDirection: "row",
       }}
@@ -61,9 +64,13 @@ export const SearchField: React.FC<ISearchField> = ({
                 onClick={() => {
                   if (searchQuery !== "") {
                     setSearchQuery("");
-                    setTimeout(() => {
-                      handleSearch();
-                    }, 500);
+                    if (handleClear) {
+                      handleClear();
+                    } else {
+                      setTimeout(() => {
+                        handleSearch();
+                      }, 500);
+                    }
                   }
                 }}
               >

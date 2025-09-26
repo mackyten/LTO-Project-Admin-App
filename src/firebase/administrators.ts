@@ -95,6 +95,7 @@ export const createAdministrator = async (
     | "createdAt"
     | "queryKeys"
     | "uuid"
+    | "idBadgePhoto"
     | "idBadgePhotoUrl"
     | "profilePictureUrl"
   >
@@ -137,10 +138,15 @@ export const createAdministrator = async (
       mobileNumber: data.mobileNumber,
       uuid: existingData.uuid || "",
       profilePictureUrl: existingData.profilePictureUrl || "",
-      idBadgePhoto: "",
+      idBadgePhotoUrl: existingData.idBadgePhotoUrl || "",
     };
 
-    await updateDoc(existingDoc.ref, updateData);
+    // Filter out undefined values before updating Firestore
+    const cleanUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter((entry) => entry[1] !== undefined)
+    );
+
+    await updateDoc(existingDoc.ref, cleanUpdateData);
   } else {
     // User does not exist, create new
     const administratorID = generateId();
@@ -163,7 +169,12 @@ export const createAdministrator = async (
       profilePictureUrl: "",
     };
 
-    const docRef = await addDoc(usersRef, userData);
+    // Filter out undefined values before saving to Firestore
+    const cleanUserData = Object.fromEntries(
+      Object.entries(userData).filter((entry) => entry[1] !== undefined)
+    );
+
+    const docRef = await addDoc(usersRef, cleanUserData);
 
     try {
       await sendEmail({
