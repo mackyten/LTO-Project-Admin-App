@@ -7,15 +7,24 @@ import {
   CardContent,
   useTheme,
   useMediaQuery,
+  Chip,
+  Divider,
 } from "@mui/material";
 import {
   CheckCircle,
   Payment,
+  Receipt,
 } from "@mui/icons-material";
+import { useSearchParams } from "react-router-dom";
 
 const PaymentSuccessPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [searchParams] = useSearchParams();
+  
+  // Get URL parameters
+  const sourceId = searchParams.get("source_id");
+  const paymentId = searchParams.get("payment_id");
 
   return (
     <Box
@@ -147,11 +156,93 @@ const PaymentSuccessPage: React.FC = () => {
                 maxWidth: 500,
                 mx: "auto",
                 lineHeight: 1.6,
+                mb: 4,
               }}
             >
               Thank you for your payment! Your transaction has been completed
               successfully. You can now go back to the app!
             </Typography>
+
+            {/* Transaction Details */}
+            {(sourceId || paymentId) && (
+              <>
+                <Divider sx={{ my: 3 }} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1,
+                    mb: 3,
+                  }}
+                >
+                  <Receipt color="primary" />
+                  <Typography
+                    variant="h6"
+                    color="primary.main"
+                    fontWeight="medium"
+                  >
+                    Transaction Details
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    maxWidth: 400,
+                    mx: "auto",
+                  }}
+                >
+                  {paymentId && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : "row",
+                        alignItems: isMobile ? "flex-start" : "center",
+                        justifyContent: "space-between",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Payment ID:
+                      </Typography>
+                      <Chip
+                        label={paymentId}
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        sx={{ fontFamily: "monospace" }}
+                      />
+                    </Box>
+                  )}
+
+                  {sourceId && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : "row",
+                        alignItems: isMobile ? "flex-start" : "center",
+                        justifyContent: "space-between",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Source ID:
+                      </Typography>
+                      <Chip
+                        label={sourceId}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        sx={{ fontFamily: "monospace" }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </>
+            )}
           </CardContent>
         </Card>
       </Container>
