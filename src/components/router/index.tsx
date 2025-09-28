@@ -16,6 +16,12 @@ const AdministratorsPage = lazy(
 );
 const AccountPage = lazy(() => import("../pages/public/account_page"));
 const ProtectedLayout = lazy(() => import("../pages/public/protected_layout"));
+const PaymentSuccessPage = lazy(
+  () => import("../pages/public/payment_success_page")
+);
+const PaymentFailedPage = lazy(
+  () => import("../pages/public/payment_failed_page")
+);
 
 // A simple wrapper for Suspense
 const withSuspense = (Component: React.ReactNode) => (
@@ -34,6 +40,14 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: withSuspense(<LoginPage />),
+      },
+      {
+        path: "success-payment",
+        element: withSuspense(<PaymentSuccessPage />),
+      },
+      {
+        path: "failed-payment",
+        element: withSuspense(<PaymentFailedPage />),
       },
       {
         path: "app",
