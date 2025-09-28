@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { PageMainCont } from "../../../shared/style_props/page_container";
 
 import { Pagination } from "../../../shared/pagination";
@@ -12,10 +12,7 @@ import { TableLoadingIndicator } from "../../../shared/loading_indicator/table_l
 import { DataTable } from "./components/data_table";
 
 const DriverPage: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { pageSize, searchQuery, setSearchQuery, setAddModalOpen } =
-    useDriversStore();
+  const { pageSize, searchQuery, setSearchQuery } = useDriversStore();
   const {
     data,
     fetchNextPage,
@@ -27,9 +24,6 @@ const DriverPage: React.FC = () => {
     isError,
   } = useDrivers({ pageSize, searchQuery });
 
-  const handleOpenAddModal = () => {
-    setAddModalOpen(true);
-  };
   const handleLoadMore = () => {
     if (hasNextPage) {
       fetchNextPage();
