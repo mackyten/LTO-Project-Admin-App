@@ -67,6 +67,7 @@ export const completePaymentProcess = async (
     // Step 4: Update report status and paymentStatus
     const reportDoc = reportSnapshot.docs[0];
     await updateDoc(reportDoc.ref, {
+      paymentReferenceId: sourceId,
       status: "Paid",
       paymentStatus: "Completed",
     });
