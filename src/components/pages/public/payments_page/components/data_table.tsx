@@ -33,7 +33,7 @@ export const DataTable: React.FC<IDataTable> = ({ data }) => {
             <TableCell>Amount</TableCell>
             <TableCell>Date</TableCell>
             <TableCell align="center">Payment Method</TableCell>
-            <TableCell align="center">Reference No.</TableCell>
+            <TableCell align="center">Reference Id</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -58,7 +58,7 @@ export const DataTable: React.FC<IDataTable> = ({ data }) => {
                     {payment.paymentMethod || "N/A"}
                   </TableCell>
                   <TableCell align="center">
-                    {payment.referenceNumber || "N/A"}
+                    {payment.paymentId || "N/A"}
                   </TableCell>
                 </TableRow>
               );

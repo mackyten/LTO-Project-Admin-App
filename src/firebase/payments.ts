@@ -88,7 +88,7 @@ export const getPayments = async ({
       // No search query - use original pagination logic
       const q = query(
         paymentsRef,
-        orderBy("paidAt", "desc"),
+        orderBy("createdAt", "desc"),
         limit(pageSize),
         ...(lastDoc ? [startAfter(lastDoc)] : [])
       );

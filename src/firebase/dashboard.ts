@@ -152,10 +152,11 @@ const convertToPaymentModel = (doc: DocumentData): PaymentModel => {
     paidById: data.paidById || "",
     paidBy: data.paidBy || undefined,
     paymentMethod: data.paymentMethod || "Cash",
-    referenceNumber: data.referenceNumber || "",
+    paymentId: data.paymentId || "",
     createdAt: convertTimestampToDate(data.createdAt) || new Date(),
     lastUpdatedAt: convertTimestampToDate(data.lastUpdatedAt) || undefined,
     isDeleted: data.isDeleted || false,
+    status: data.status,
     deletedAt: convertTimestampToDate(data.deletedAt) || null,
   };
 };
