@@ -107,8 +107,8 @@ export const FullDetailsDialog: React.FC = () => {
             }}
           />
           <Title name={"Violations"} />
-          {selectedReport?.violations.map((violation: string, index) => {
-            return <ViolationItem key={index} name={violation} />;
+          {selectedReport?.violations.map((violation, index) => {
+            return <ViolationItem key={index} name={violation.violationName} />;
           })}
           <Divider
             sx={{

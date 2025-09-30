@@ -110,7 +110,7 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
                   <TableCell>{report.trackingNumber || "N/A"}</TableCell>
                   <TableCell>{report.fullname}</TableCell>
                   <TableCell>{report.plateNumber}</TableCell>
-                  <TableCell>{report.violations.join(", ")}</TableCell>
+                  <TableCell>{report.violations.map(v => v.violationName).join(", ")}</TableCell>
                   <TableCell>{FormatDate(report.createdAt)}</TableCell>
                   <TableCell>
                     <IconButton

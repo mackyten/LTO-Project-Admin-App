@@ -1,3 +1,5 @@
+import type { ViolationModel } from "./violation_model";
+
 export interface ReportModel {
   documentId: string;
   fullname: string;
@@ -10,7 +12,7 @@ export interface ReportModel {
   evidencePhoto: string;
   trackingNumber?: string | null;
   createdById?: string | null;
-  violations: string[];
+  violations: ViolationModel[];
   createdAt?: Date | null;
   draftId?: string | null;
   status: "Overturned" | "Submitted" | "Cancelled" | "Paid";

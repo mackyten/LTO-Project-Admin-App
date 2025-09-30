@@ -241,7 +241,7 @@ const getTopViolationTypes = (
 
   reports.forEach((report) => {
     report.violations.forEach((violation) => {
-      violationCounts[violation] = (violationCounts[violation] || 0) + 1;
+      violationCounts[violation.violationName] = (violationCounts[violation.violationName] || 0) + 1;
     });
   });
 
