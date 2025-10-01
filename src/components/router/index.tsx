@@ -11,6 +11,7 @@ const ViolationsPage = lazy(() => import("../pages/public/violations_page"));
 const EnforcersPage = lazy(() => import("../pages/public/enforcers_page"));
 const PaymentsPage = lazy(() => import("../pages/public/payments_page"));
 const DriversPage = lazy(() => import("../pages/public/drivers_page"));
+const AppealsPage = lazy(() => import("../pages/public/appeals_page"));
 const AdministratorsPage = lazy(
   () => import("../pages/public/administrators_page")
 );
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
           {
             path: "administrators",
             element: withSuspense(<AdministratorsPage />),
+          },
+          {
+            path: "appeals",
+            element: withSuspense(<AppealsPage />),
           },
           {
             path: "account",

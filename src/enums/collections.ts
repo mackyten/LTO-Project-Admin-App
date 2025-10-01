@@ -3,4 +3,5 @@ export enum FirebaseCollections {
   users = "users",
   enforcerIdType = "enforcer_id_type",
   payments = "payments",
+  appeals = "appeals",
 }

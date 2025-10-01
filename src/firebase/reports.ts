@@ -158,6 +158,43 @@ export const getReports = async ({
   return { reports, lastDoc: lastVisible, totalCount };
 };
 
+export const getReportByTrackingNumber = async (
+  violationTrackingNumber: string
+): Promise<ReportModel | null> => {
+  if (!violationTrackingNumber) {
+    throw new Error("Violation tracking number is required.");
+  }
+
+  try {
+    // const trackingNumberUpper = violationTrackingNumber.toUpperCase();
+    const q = query(
+      collection(db, FirebaseCollections.reports),
+      where("trackingNumber", "==", violationTrackingNumber),
+      limit(1)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const doc = querySnapshot.docs[0];
+    const data = doc.data();
+
+    return {
+      documentId: doc.id,
+      ...data,
+      createdAt: data.createdAt instanceof Timestamp 
+        ? data.createdAt.toDate() 
+        : new Date(data.createdAt as unknown as string),
+    } as ReportModel;
+  } catch (e) {
+    console.error("Error getting report by tracking number: ", e);
+    throw e;
+  }
+};
+
 export const deleteReport = async (documentId: string): Promise<void> => {
   if (!documentId) {
     throw new Error("Document ID is required to delete a report.");
