@@ -16,6 +16,7 @@ import {
 import { Warning } from "@mui/icons-material";
 import { useRecentActivity } from "../hooks";
 import { format } from "date-fns";
+import { getStatusColor, statusChipStyles } from "../../../../../utils/status_utils";
 
 // Latest Violations Component - Requirement 5
 const LatestViolations: React.FC = () => {
@@ -69,13 +70,8 @@ const LatestViolations: React.FC = () => {
                     <Chip
                       label={violation.paymentStatus}
                       size="small"
-                      color={
-                        violation.paymentStatus === "Completed"
-                          ? "success"
-                          : violation.paymentStatus === "Pending"
-                          ? "warning"
-                          : "default"
-                      }
+                      color={getStatusColor(violation.paymentStatus)}
+                      sx={statusChipStyles}
                     />
                   </TableCell>
                 </TableRow>

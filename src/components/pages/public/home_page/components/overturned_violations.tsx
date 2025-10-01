@@ -16,6 +16,7 @@ import {
 import { Gavel } from "@mui/icons-material";
 import { useRecentActivity } from "../hooks";
 import { format } from "date-fns";
+import { statusChipStyles } from "../../../../../utils/status_utils";
 
 // Overturned Violations Component - Requirement 10
 const OverturnedViolations: React.FC = () => {
@@ -73,6 +74,7 @@ const OverturnedViolations: React.FC = () => {
                       size="small"
                       color="primary"
                       icon={<Gavel sx={{ color: "primary.main" }} />}
+                      sx={statusChipStyles}
                     />
                   </TableCell>
                 </TableRow>

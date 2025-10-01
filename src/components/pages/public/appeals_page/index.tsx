@@ -5,11 +5,24 @@ import { PageHeader } from "../../../shared/page_header";
 import { TableLoadingIndicator } from "../../../shared/loading_indicator/table_loading";
 import { Pagination } from "../../../shared/pagination";
 import useAppealsStore from "./store";
-import { useAppeals } from "./hooks";
+import { useAppeals, useUpdateAppealStatus } from "./hooks";
 import { DataTable } from "./components/data_table";
+import { AppealDetailsDialog } from "./components/appeal_details_dialog";
+import { useAuth } from "../../../../context/auth_context";
+import type { AppealsModel } from "../../../../models/appeals_model";
 
 const AppealsPage: React.FC = () => {
-  const { pageSize, searchQuery, setSearchQuery } = useAppealsStore();
+  const { currentUser } = useAuth();
+  const { 
+    pageSize, 
+    searchQuery, 
+    selectedAppeal, 
+    isAppealDetailsDialogOpen,
+    setSearchQuery,
+    setSelectedAppeal,
+    setAppealDetailsDialogOpen
+  } = useAppealsStore();
+  
   const {
     data,
     fetchNextPage,
@@ -20,6 +33,8 @@ const AppealsPage: React.FC = () => {
     refetch,
     isError,
   } = useAppeals({ pageSize, searchQuery });
+
+  const updateAppealStatusMutation = useUpdateAppealStatus();
 
   const handleLoadMore = () => {
     if (hasNextPage) {
@@ -35,6 +50,38 @@ const AppealsPage: React.FC = () => {
     if (event.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const handleOpenAppeal = (appeal: AppealsModel) => {
+    setSelectedAppeal(appeal);
+    setAppealDetailsDialogOpen(true);
+  };
+
+  const handleApproveAppeal = (appeal: AppealsModel) => {
+    if (currentUser?.uid) {
+      updateAppealStatusMutation.mutate({
+        documentId: appeal.documentId,
+        status: "Approved",
+        currentUserId: currentUser.uid,
+        violationTrackingNumber: appeal.violationTrackingNumber,
+      });
+    }
+  };
+
+  const handleRejectAppeal = (appeal: AppealsModel) => {
+    if (currentUser?.uid) {
+      updateAppealStatusMutation.mutate({
+        documentId: appeal.documentId,
+        status: "Rejected",
+        currentUserId: currentUser.uid,
+        violationTrackingNumber: appeal.violationTrackingNumber,
+      });
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setAppealDetailsDialogOpen(false);
+    setSelectedAppeal(undefined);
   };
 
   if (isLoading) {
@@ -53,9 +100,9 @@ const AppealsPage: React.FC = () => {
     <Box sx={PageMainCont}>
       <Box sx={PageMainCont.SubCont}>
         <PageHeader
-          title="Payments"
-          totalCountLabel="Total Payments"
-          searchPlaceholder="Search by tracking number or payment reference number"
+          title="Appeals"
+          totalCountLabel="Total Appeals"
+          searchPlaceholder="Search by violation tracking number"
           totalCount={totalCount}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -64,7 +111,12 @@ const AppealsPage: React.FC = () => {
         />
         <Box sx={{ position: "relative" }}>
           {isRefetching && <TableLoadingIndicator />}
-          <DataTable data={allData} />
+          <DataTable 
+            data={allData}
+            onOpenAppeal={handleOpenAppeal}
+            onApproveAppeal={handleApproveAppeal}
+            onRejectAppeal={handleRejectAppeal}
+          />
         </Box>
         <Pagination
           dataSeen={dataSeen}
@@ -73,6 +125,13 @@ const AppealsPage: React.FC = () => {
           onLoadMore={handleLoadMore}
         />
       </Box>
+      
+      <AppealDetailsDialog
+        open={isAppealDetailsDialogOpen}
+        onClose={handleCloseDialog}
+        appeal={selectedAppeal || null}
+        currentUserId={currentUser?.uid}
+      />
     </Box>
   );
 };

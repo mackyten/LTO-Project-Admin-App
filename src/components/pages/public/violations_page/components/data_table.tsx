@@ -13,10 +13,12 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Chip,
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
 import { FormatDate } from "../../../../../utils/date_formatter";
+import { getStatusColor, getDisplayStatus, statusChipStyles } from "../../../../../utils/status_utils";
 import { Delete, DriveEta, Info, MoreVert } from "@mui/icons-material";
 import useViolationsStore from "../store";
 import type { ReportModel } from "../../../../../models/report_model";
@@ -90,6 +92,7 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
             <TableCell width="15%">Full Name</TableCell>
             <TableCell>Plate Number</TableCell>
             <TableCell>Violations</TableCell>
+            <TableCell>Status</TableCell>
             <TableCell>Created At</TableCell>
             <TableCell sx={TableStyleProps.tableHeadRight}>Actions</TableCell>
           </TableRow>
@@ -97,7 +100,7 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
         <TableBody>
           {allReports.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} align="center">
+              <TableCell colSpan={8} align="center">
                 No reports found.
               </TableCell>
             </TableRow>
@@ -111,6 +114,14 @@ export const DataTable: React.FC<IDataTable> = ({ allReports }) => {
                   <TableCell>{report.fullname}</TableCell>
                   <TableCell>{report.plateNumber}</TableCell>
                   <TableCell>{report.violations.map(v => v.violationName).join(", ")}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={getDisplayStatus(report.status)}
+                      color={getStatusColor(report.status)}
+                      size="small"
+                      sx={statusChipStyles}
+                    />
+                  </TableCell>
                   <TableCell>{FormatDate(report.createdAt)}</TableCell>
                   <TableCell>
                     <IconButton

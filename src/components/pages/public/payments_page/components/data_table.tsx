@@ -6,11 +6,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Chip,
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
 import type { PaymentModel } from "../../../../../models/payment_model";
 import { FormatDate } from "../../../../../utils/date_formatter";
+import { getStatusColor, getDisplayStatus, statusChipStyles } from "../../../../../utils/status_utils";
 
 interface IDataTable {
   data: PaymentModel[];
@@ -61,8 +63,12 @@ export const DataTable: React.FC<IDataTable> = ({ data }) => {
                   <TableCell align="center">
                     {payment.paymentId || "N/A"}
                   </TableCell>
-                  <TableCell align="center">
-                    {payment.status || "N/A"}
+                                    <TableCell>
+                    <Chip
+                      color={getStatusColor(payment.status)}
+                      label={getDisplayStatus(payment.status)}
+                      sx={statusChipStyles}
+                    />
                   </TableCell>
                 </TableRow>
               );

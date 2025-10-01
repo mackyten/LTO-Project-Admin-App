@@ -18,23 +18,25 @@ import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   Badge as BadgeIcon,
+  DirectionsCar as DirectionsCarIcon,
 } from "@mui/icons-material";
 import { Transition } from "../../../../shared/transition";
 import type React from "react";
-import useEnforcersStore from "../store";
+import useDriversStore from "../store";
 
-export const EnforcerDetailsDialog: React.FC = () => {
+export const DriverProfileDialog: React.FC = () => {
   const {
     isProfileModalOpen,
-    selectedEnforcer,
+    selectedDriver,
     setProfileModalOpen,
-    setSelectedEnforcer,
-  } = useEnforcersStore();
+    setSelectedDriver,
+  } = useDriversStore();
 
   const handleClose = () => {
     setProfileModalOpen(false);
-    setSelectedEnforcer(undefined);
+    setSelectedDriver(undefined);
   };
+
   return (
     <>
       <Dialog
@@ -46,7 +48,7 @@ export const EnforcerDetailsDialog: React.FC = () => {
         }}
         keepMounted
         onClose={handleClose}
-        aria-describedby="enforcer-profile-dialog"
+        aria-describedby="driver-profile-dialog"
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -59,10 +61,10 @@ export const EnforcerDetailsDialog: React.FC = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
             <Box>
               <Typography variant="h5" fontWeight={700} color="primary" sx={{ mb: 1 }}>
-                Enforcer Profile
+                Driver Profile
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Complete enforcer information and details
+                Complete driver information and details
               </Typography>
             </Box>
             <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
@@ -86,8 +88,8 @@ export const EnforcerDetailsDialog: React.FC = () => {
                 }}
               >
                 <Avatar
-                  src={selectedEnforcer?.profilePictureUrl}
-                  alt={selectedEnforcer?.lastName}
+                  src={selectedDriver?.profilePictureUrl}
+                  alt={selectedDriver?.lastName}
                   sx={{ 
                     width: 200, 
                     height: 200, 
@@ -99,15 +101,15 @@ export const EnforcerDetailsDialog: React.FC = () => {
                   }}
                 />
                 <Typography variant="h6" fontWeight={600} color="primary" sx={{ mb: 0.5 }}>
-                  {selectedEnforcer?.firstName} {selectedEnforcer?.lastName}
+                  {selectedDriver?.firstName} {selectedDriver?.lastName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {selectedEnforcer?.middleName && `${selectedEnforcer.middleName}`}
+                  {selectedDriver?.middleName && `${selectedDriver.middleName}`}
                 </Typography>
               </Card>
             </Grid>
 
-            {/* Enforcer Details */}
+            {/* Driver Details */}
             <Grid size={{ xs: 12, md: 8 }}>
               <Card 
                 elevation={0}
@@ -137,7 +139,7 @@ export const EnforcerDetailsDialog: React.FC = () => {
                         Personal Information
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                        Enforcer profile and contact details
+                        Driver profile and contact details
                       </Typography>
                     </Box>
                   </Box>
@@ -147,28 +149,35 @@ export const EnforcerDetailsDialog: React.FC = () => {
                       <ModernDetailItem 
                         icon={<PersonIcon />}
                         label="Full Name" 
-                        value={`${selectedEnforcer?.lastName}, ${selectedEnforcer?.firstName} ${selectedEnforcer?.middleName || ''}`.trim()}
+                        value={`${selectedDriver?.lastName}, ${selectedDriver?.firstName} ${selectedDriver?.middleName || ''}`.trim()}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <ModernDetailItem 
                         icon={<EmailIcon />}
                         label="Email Address" 
-                        value={selectedEnforcer?.email} 
+                        value={selectedDriver?.email} 
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <ModernDetailItem 
                         icon={<PhoneIcon />}
                         label="Mobile Number" 
-                        value={selectedEnforcer?.mobileNumber} 
+                        value={selectedDriver?.mobileNumber} 
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <ModernDetailItem 
                         icon={<BadgeIcon />}
-                        label="ID Number" 
-                        value={selectedEnforcer?.enforcerIdNumber || "N/A"} 
+                        label="License Number" 
+                        value={selectedDriver?.driverLicenseNumber || "N/A"} 
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                      <ModernDetailItem 
+                        icon={<DirectionsCarIcon />}
+                        label="Plate Number" 
+                        value={selectedDriver?.plateNumber || "N/A"} 
                       />
                     </Grid>
                   </Grid>

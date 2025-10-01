@@ -1,11 +1,17 @@
-// src/store/counterStore.ts
+// src/store/appealsStore.ts
 import { create } from "zustand";
+import type { AppealsModel } from "../../../../models/appeals_model";
 
 // Define the shape of your state
 interface AppealsStore {
   pageSize: number;
   searchQuery: string;
+  selectedAppeal: AppealsModel | undefined;
+  isAppealDetailsDialogOpen: boolean;
+  
   setSearchQuery: (val: string) => void;
+  setSelectedAppeal: (appeal: AppealsModel | undefined) => void;
+  setAppealDetailsDialogOpen: (open: boolean) => void;
   reset: () => void;
 }
 
@@ -13,12 +19,19 @@ interface AppealsStore {
 const useAppealsStore = create<AppealsStore>((set) => ({
   pageSize: 10,
   searchQuery: "",
+  selectedAppeal: undefined,
+  isAppealDetailsDialogOpen: false,
+  
   setSearchQuery: (searchQuery: string) => set({ searchQuery }),
+  setSelectedAppeal: (selectedAppeal: AppealsModel | undefined) => set({ selectedAppeal }),
+  setAppealDetailsDialogOpen: (isAppealDetailsDialogOpen: boolean) => set({ isAppealDetailsDialogOpen }),
 
   reset: () =>
     set({
       pageSize: 10,
       searchQuery: "",
+      selectedAppeal: undefined,
+      isAppealDetailsDialogOpen: false,
     }),
 }));
 

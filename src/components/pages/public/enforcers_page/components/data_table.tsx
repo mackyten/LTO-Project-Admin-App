@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Box,
   ClickAwayListener,
   Grow,
   IconButton,
@@ -15,12 +14,11 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Chip,
 } from "@mui/material";
 import type React from "react";
 import { TableStyleProps } from "../../../../shared/style_props/table";
 import {
-  AccessTime,
-  CheckCircle,
   Delete,
   MoreVert,
   Person,
@@ -29,6 +27,7 @@ import { useRef } from "react";
 import { mainColor } from "../../../../../themes/colors";
 import useEnforcersStore from "../store";
 import type { EnforcerModel } from "../../../../../models/enforcer_model";
+import { getStatusColor, getDisplayStatus, statusChipStyles } from "../../../../../utils/status_utils";
 
 interface IDataTable {
   enforcers: EnforcerModel[];
@@ -75,29 +74,9 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
   const handleViewEnforcerProfile = (enforcer: EnforcerModel) => {
     setSelectedEnforcer(enforcer);
     setProfileModalOpen(true);
+    setOpenMenuId(null); // Close the menu after selection
   };
 
-  const getEnforcerStatus = (uuid: string | null) => {
-    if (uuid === null) {
-      return (
-        <Box display="flex" alignItems="center">
-          <AccessTime sx={{ color: "orange" }} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
-            Pending
-          </Typography>
-        </Box>
-      );
-    } else {
-      return (
-        <Box display="flex" alignItems="center">
-          <CheckCircle sx={{ color: "green" }} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
-            Registered
-          </Typography>
-        </Box>
-      );
-    }
-  };
   return (
     <TableContainer component={Paper} sx={TableStyleProps.container}>
       <Table
@@ -157,7 +136,14 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
                     {enforcer.lastName}, {enforcer.firstName}
                   </TableCell>
                   <TableCell>{enforcer.email}</TableCell>
-                  <TableCell>{getEnforcerStatus(enforcer.uuid)}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={getDisplayStatus(enforcer.uuid ? "Registered" : "Pending")}
+                      color={getStatusColor(enforcer.uuid ? "Registered" : "Pending")}
+                      size="small"
+                      sx={statusChipStyles}
+                    />
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       ref={(el) => {

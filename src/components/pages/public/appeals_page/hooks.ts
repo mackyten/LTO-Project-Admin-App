@@ -45,15 +45,20 @@ export const useUpdateAppealStatus = () => {
     mutationFn: ({ 
       documentId, 
       status, 
-      currentUserId 
+      currentUserId,
+      violationTrackingNumber
     }: { 
       documentId: string; 
       status: "Approved" | "Rejected"; 
       currentUserId: string; 
-    }) => updateAppealStatus(documentId, status, currentUserId),
+      violationTrackingNumber: string;
+    }) => updateAppealStatus(documentId, status, currentUserId, violationTrackingNumber),
     onSuccess: () => {
       // Invalidate the 'appeals' query to force a refetch and update the UI
       queryClient.invalidateQueries({ queryKey: ["appeals"] });
+      // Also invalidate reports queries since we might update report status
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["report"] });
     },
     onError: (error) => {
       console.error("Error updating appeal status: ", error);

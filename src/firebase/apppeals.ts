@@ -207,7 +207,8 @@ export const getAppeals = async ({
 export const updateAppealStatus = async (
   documentId: string,
   status: "Approved" | "Rejected",
-  currentUserId: string
+  currentUserId: string,
+  violationTrackingNumber: string
 ): Promise<void> => {
   if (!documentId) {
     throw new Error("Document ID is required to update an appeal.");
@@ -217,12 +218,42 @@ export const updateAppealStatus = async (
     throw new Error("Current User ID is required to update an appeal.");
   }
 
+  if (!violationTrackingNumber) {
+    throw new Error("Violation tracking number is required to update an appeal.");
+  }
+
   try {
+    // Update the appeal status
     const appealRef = doc(db, FirebaseCollections.appeals, documentId);
     await updateDoc(appealRef, {
       status: status,
       statusUpdatedById: currentUserId,
     });
+
+    // If approved, update the report status to "Overturned"
+    if (status === "Approved") {
+      const reportsQuery = query(
+        collection(db, FirebaseCollections.reports),
+        where("trackingNumber", "==", violationTrackingNumber.toUpperCase()),
+        limit(1)
+      );
+
+      const reportsSnapshot = await getDocs(reportsQuery);
+      
+      if (!reportsSnapshot.empty) {
+        const reportDoc = reportsSnapshot.docs[0];
+        const reportRef = doc(db, FirebaseCollections.reports, reportDoc.id);
+        
+        await updateDoc(reportRef, {
+          status: "Overturned"
+        });
+        
+        console.log(`Report with tracking number ${violationTrackingNumber} status updated to Overturned.`);
+      } else {
+        console.warn(`No report found with tracking number: ${violationTrackingNumber}`);
+      }
+    }
+
     console.log(`Appeal with ID ${documentId} status updated to ${status}.`);
   } catch (e) {
     console.error(`Error updating appeal status with ID ${documentId}: `, e);

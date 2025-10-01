@@ -59,6 +59,7 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
   const handleViewDriverProfile = (driver: DriverModel) => {
     setSelectedDriver(driver);
     setProfileModalOpen(true);
+    setOpenMenuId(null); // Close the menu after selection
   };
 
   return (
