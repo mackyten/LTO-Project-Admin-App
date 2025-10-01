@@ -72,7 +72,31 @@ const ProtectedLayout: React.FC = () => {
   };
 
   const drawer = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        background: `linear-gradient(135deg, ${alpha(
+          mainColor.primary,
+          0.02
+        )} 0%, ${alpha(mainColor.secondary, 0.02)} 50%, ${alpha(
+          mainColor.tertiary,
+          0.02
+        )} 100%)`,
+        position: "relative",
+        "&::before": {
+          background: `radial-gradient(circle at 10% 20%, ${alpha(
+            mainColor.highlight,
+            0.03
+          )} 0%, transparent 50%),
+                             radial-gradient(circle at 90% 80%, ${alpha(
+                               mainColor.secondary,
+                               0.04
+                             )} 0%, transparent 50%)`,
+        },
+      }}
+    >
       <Toolbar />
       <Divider />
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
