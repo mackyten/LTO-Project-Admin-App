@@ -24,19 +24,7 @@ const HomePage: React.FC = () => {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        background: `linear-gradient(135deg, ${alpha(mainColor.primary, 0.02)} 0%, ${alpha(mainColor.secondary, 0.02)} 50%, ${alpha(mainColor.tertiary, 0.02)} 100%)`,
-        position: "relative",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `radial-gradient(circle at 10% 20%, ${alpha(mainColor.highlight, 0.03)} 0%, transparent 50%),
-                       radial-gradient(circle at 90% 80%, ${alpha(mainColor.secondary, 0.04)} 0%, transparent 50%)`,
-          pointerEvents: "none",
-        },
+    
       }}
     >
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: 4 }}>
