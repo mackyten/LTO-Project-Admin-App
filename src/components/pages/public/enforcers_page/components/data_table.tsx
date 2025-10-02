@@ -115,7 +115,7 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
           {enforcers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} align="center">
-                No reports found.
+                No enforcers found.
               </TableCell>
             </TableRow>
           ) : (
