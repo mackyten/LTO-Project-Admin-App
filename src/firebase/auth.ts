@@ -6,6 +6,7 @@ import {
   EmailAuthProvider,
   updateEmail,
   updatePassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import type { LoginSchemaType } from "../components/pages/auth/schema";
 import { auth } from "../firebase";
@@ -231,6 +232,25 @@ export const reauthenticateAndChangePassword = async (
       throw new Error(
         `Failed to change password: ${authError.message || "Unknown error"}`
       );
+    }
+  }
+};
+
+export const sendPasswordReset = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error) {
+    const authError = error as { code?: string; message?: string };
+    
+    switch (authError.code) {
+      case "auth/user-not-found":
+        throw new Error("No account found with this email address.");
+      case "auth/invalid-email":
+        throw new Error("Invalid email address.");
+      case "auth/too-many-requests":
+        throw new Error("Too many requests. Please try again later.");
+      default:
+        throw new Error(authError.message || "Failed to send password reset email.");
     }
   }
 };
