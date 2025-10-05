@@ -27,10 +27,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { mainColor } from "../../../themes/colors";
 import { useLogin } from "./hooks";
+import ForgotPasswordModal from "./forgot_password_modal";
 
 const LoginPage: React.FC = () => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);
   const {
     register,
     handleSubmit,
@@ -47,6 +49,14 @@ const LoginPage: React.FC = () => {
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleForgotPasswordOpen = () => {
+    setForgotPasswordOpen(true);
+  };
+
+  const handleForgotPasswordClose = () => {
+    setForgotPasswordOpen(false);
   };
 
   return (
@@ -267,6 +277,7 @@ const LoginPage: React.FC = () => {
                   <Button
                     variant="text"
                     fullWidth
+                    onClick={handleForgotPasswordOpen}
                     sx={{
                       color: mainColor.secondary,
                       fontWeight: 500,
@@ -299,6 +310,12 @@ const LoginPage: React.FC = () => {
           </Typography>
         </Box>
       </Container>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onClose={handleForgotPasswordClose}
+      />
     </Box>
   );
 };

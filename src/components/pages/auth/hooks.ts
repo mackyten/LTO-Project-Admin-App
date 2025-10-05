@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { logoutUser, loginUser } from "../../../firebase/auth";
+import { logoutUser, loginUser, sendPasswordReset } from "../../../firebase/auth";
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -33,6 +33,18 @@ export const useLogin = () => {
     onError: (error) => {
       console.error("Login failed:", error);
       // You can handle specific error codes here
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: sendPasswordReset,
+    onSuccess: () => {
+      console.log("Password reset email sent successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to send password reset email:", error);
     },
   });
 };
