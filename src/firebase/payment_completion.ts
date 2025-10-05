@@ -8,6 +8,7 @@ import {
 import { db } from "../firebase";
 import { FirebaseCollections } from "../enums/collections";
 import type { PaymentModel } from "../models/payment_model";
+import { sendPaymentEmail } from "../utils/emailjs";
 
 /**
  * Complete payment process by updating payment and report status
@@ -70,7 +71,29 @@ export const completePaymentProcess = async (
       paymentReferenceId: sourceId,
       status: "Paid",
       paymentStatus: "Completed",
+      emailSent: false,
     });
+
+    if (reportDoc.data().emailSent !== true) {
+      const usersRef = collection(db, FirebaseCollections.users);
+      const userQuery = query(usersRef, where("uuid", "==", reportDoc.data().violatorId));
+      const userSnapshot = await getDocs(userQuery);
+      
+      if (!userSnapshot.empty) {
+        const userData = userSnapshot.docs[0].data();
+        await sendPaymentEmail({
+          email: userData.email,
+          name: `${userData.firstName} ${userData.lastName}`,
+          amount: paymentData.amount,
+          violationTrackingNumber: trackingNumber,
+          paymentId: sourceId,
+        });
+
+        await updateDoc(reportDoc.ref, {
+          emailSent: true,
+        });
+      }
+    }
 
     return {
       success: true,

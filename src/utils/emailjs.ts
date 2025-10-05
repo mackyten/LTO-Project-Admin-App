@@ -21,4 +21,21 @@ export const sendEmail = async (templateParams: Record<string, unknown>) => {
   }
 };
 
+// Function to send payment-related emails
+export const sendPaymentEmail = async (templateParams: Record<string, unknown>) => {
+  console.log("Sending payment email with params:", templateParams);
+  try {
+    const result = await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_PAYMENTID,
+      templateParams
+    );
+    console.log("Payment email sent successfully:", result);
+    return result;
+  } catch (error) {
+    console.error("Failed to send payment email:", error);
+    throw error;
+  }
+};
+
 export default emailjs;
