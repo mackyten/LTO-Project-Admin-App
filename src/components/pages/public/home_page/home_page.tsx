@@ -1,7 +1,6 @@
 import React from "react";
-import { Box, Typography, Button, Container, Paper, alpha, Fade } from "@mui/material";
-import { Refresh, Dashboard as DashboardIcon } from "@mui/icons-material";
-import { useDashboardState } from "./hooks";
+import { Box, Typography, Container, Paper, alpha, Fade } from "@mui/material";
+import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { mainColor } from "../../../../themes/colors";
 
 // Import all extracted components
@@ -17,14 +16,13 @@ import SearchBar from "./components/search_bar";
 
 // Main Dashboard Component
 const HomePage: React.FC = () => {
-  const { refetchAll, isLoading } = useDashboardState();
+  //  const { refetchAll, isLoading } = useDashboardState();
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
         width: "100%",
-    
       }}
     >
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: 4 }}>
@@ -32,7 +30,10 @@ const HomePage: React.FC = () => {
           <Paper
             elevation={0}
             sx={{
-              background: `linear-gradient(145deg, ${alpha(mainColor.background, 0.8)}, ${alpha(mainColor.background, 0.6)})`,
+              background: `linear-gradient(145deg, ${alpha(
+                mainColor.background,
+                0.8
+              )}, ${alpha(mainColor.background, 0.6)})`,
               backdropFilter: "blur(20px)",
               border: `1px solid ${alpha(mainColor.secondary, 0.1)}`,
               borderRadius: 4,
@@ -79,12 +80,16 @@ const HomePage: React.FC = () => {
                   >
                     Dashboard
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mt: 0.5 }}
+                  >
                     Monitor and manage LTO operations
                   </Typography>
                 </Box>
               </Box>
-              <Button
+              {/* <Button
                 variant="contained"
                 startIcon={<Refresh />}
                 onClick={() => refetchAll()}
@@ -109,7 +114,7 @@ const HomePage: React.FC = () => {
                 }}
               >
                 {isLoading ? "Refreshing..." : "Refresh Data"}
-              </Button>
+              </Button> */}
             </Box>
 
             <SearchBar />

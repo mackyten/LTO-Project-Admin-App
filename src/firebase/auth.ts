@@ -37,7 +37,7 @@ export const loginUser = async (credentials: LoginSchemaType) => {
     return userCredential.user;
   } catch (error) {
     const authError = error as { code?: string };
-    if (authError.code === "auth/invalid-credential") {
+    if (authError.code === "auth/user-not-found") {
       console.log("User not found in Firebase Auth, checking Firestore...");
       // Check Firestore for temporary password
       const usersRef = collection(db, FirebaseCollections.users);

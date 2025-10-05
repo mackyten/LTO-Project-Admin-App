@@ -74,24 +74,56 @@ export const completePaymentProcess = async (
       emailSent: false,
     });
 
-    if (reportDoc.data().emailSent !== true) {
-      const usersRef = collection(db, FirebaseCollections.users);
-      const userQuery = query(usersRef, where("uuid", "==", reportDoc.data().violatorId));
-      const userSnapshot = await getDocs(userQuery);
-      
-      if (!userSnapshot.empty) {
-        const userData = userSnapshot.docs[0].data();
-        await sendPaymentEmail({
-          email: userData.email,
-          name: `${userData.firstName} ${userData.lastName}`,
-          amount: paymentData.amount,
-          violationTrackingNumber: trackingNumber,
-          paymentId: paymentData.paymentId,
-        });
+    // Step 5: Send email notification if not already sent
+    const reportData = reportDoc.data();
+    if (reportData.emailSent !== null) {
+      const violatorId = paymentData.violatorId;
+      if (violatorId) {
+        try {
+          const usersRef = collection(db, FirebaseCollections.users);
+          const userQuery = query(
+            usersRef,
+            where("uuid", "==", violatorId)
+          );
+          const userSnapshot = await getDocs(userQuery);
 
-        await updateDoc(reportDoc.ref, {
-          emailSent: true,
-        });
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs[0].data();
+            
+            // Validate required user data before sending email
+            if (userData.email && userData.firstName && userData.lastName) {
+              // Format amount to Philippine Peso currency
+              const formattedAmount = new Intl.NumberFormat('en-PH', {
+                style: 'currency',
+                currency: 'PHP'
+              }).format(paymentData.amount);
+
+              await sendPaymentEmail({
+                email: userData.email,
+                name: `${userData.firstName} ${userData.lastName}`,
+                amount: formattedAmount,
+                violationTrackingNumber: trackingNumber,
+                paymentId: paymentData.paymentId,
+              });
+
+              // Mark email as sent
+              await updateDoc(reportDoc.ref, {
+                emailSent: true,
+              });
+              
+              console.log("Payment confirmation email sent successfully");
+            } else {
+              console.warn("User data incomplete, cannot send email");
+            }
+          } else {
+            console.warn(`User not found for violatorId: ${violatorId}`);
+          }
+        } catch (emailError) {
+          console.error("Error sending payment email:", emailError);
+          // Don't throw here - payment is already completed, email is just a notification
+        }
+      } else {
+        console.warn("No violatorId found in report data");
       }
     }
 

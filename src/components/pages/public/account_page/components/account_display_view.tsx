@@ -1,7 +1,5 @@
-import React from "react";
-import { Box, Grid, Typography, Divider } from "@mui/material";
+import {  Grid, Typography,  } from "@mui/material";
 import { InfoField } from "./info_field";
-import { ImageUpload } from "./image_upload";
 import type { AccountData } from "./types";
 
 interface AccountDisplayViewProps {
@@ -13,9 +11,9 @@ interface AccountDisplayViewProps {
 
 export const AccountDisplayView: React.FC<AccountDisplayViewProps> = ({
   accountData,
-  idBadgePhoto,
-  idBadgePhotoUrl,
-  onIdBadgePhotoChange,
+  // idBadgePhoto,
+  // idBadgePhotoUrl,
+  // onIdBadgePhotoChange,
 }) => {
   return (
     <Grid container spacing={4}>
@@ -48,7 +46,7 @@ export const AccountDisplayView: React.FC<AccountDisplayViewProps> = ({
         />
       </Grid>
 
-      <Grid size={12}>
+      {/* <Grid size={12}>
         <Divider sx={{ my: 2 }} />
         <Typography
           variant="h6"
@@ -71,7 +69,7 @@ export const AccountDisplayView: React.FC<AccountDisplayViewProps> = ({
             size={120}
           />
         </Box>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };
