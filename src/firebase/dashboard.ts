@@ -342,9 +342,9 @@ export const getDashboardData = async (): Promise<DashboardData> => {
     // Query today's payments (drivers who paid today)
     const todaysPaymentsQuery = query(
       paymentsRef,
-      where("paidAt", ">=", todayRange.start),
-      where("paidAt", "<", todayRange.end),
-      orderBy("paidAt", "desc"),
+      where("createdAt", ">=", todayRange.start),
+      where("createdAt", "<", todayRange.end),
+      orderBy("createdAt", "desc"),
       limit(3)
     );
     const todaysPaymentsSnapshot = await getDocs(todaysPaymentsQuery);
