@@ -86,7 +86,7 @@ export const completePaymentProcess = async (
           name: `${userData.firstName} ${userData.lastName}`,
           amount: paymentData.amount,
           violationTrackingNumber: trackingNumber,
-          paymentId: sourceId,
+          paymentId: paymentData.paymentId,
         });
 
         await updateDoc(reportDoc.ref, {
