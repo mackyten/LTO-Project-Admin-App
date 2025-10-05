@@ -74,7 +74,7 @@ export const DataTable: React.FC<IDataTable> = ({ enforcers }) => {
   const handleViewEnforcerProfile = (enforcer: EnforcerModel) => {
     setSelectedEnforcer(enforcer);
     setProfileModalOpen(true);
-    setOpenMenuId(null); // Close the menu after selection
+    setOpenMenuId(null); 
   };
 
   return (

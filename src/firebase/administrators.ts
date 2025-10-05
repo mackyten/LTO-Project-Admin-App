@@ -14,6 +14,7 @@ import {
   getDoc,
   doc,
   updateDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { FirebaseCollections } from "../enums/collections";
@@ -66,14 +67,17 @@ export const getAdministrators = async ({
 
     totalCount = countSnapshot.data().count;
     administrators = querySnapshot.docs.map(
-      (doc) =>
-        ({
+      (doc) => {
+        const data = doc.data();
+        return {
           documentId: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate
-            ? doc.data().createdAt.toDate()
-            : new Date(doc.data().createdAt),
-        } as AdministratorModel)
+          ...data,
+          // Convert Firestore Timestamps to JavaScript Dates
+          createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+          lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+          deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+        } as AdministratorModel;
+      }
     );
 
     lastVisible =
@@ -83,7 +87,6 @@ export const getAdministrators = async ({
   } catch (e) {
     console.error("Error getting administrators: ", e);
   }
-
   return { administrators, lastDoc: lastVisible, totalCount };
 };
 

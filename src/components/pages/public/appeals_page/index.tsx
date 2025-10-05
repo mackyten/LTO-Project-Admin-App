@@ -99,16 +99,28 @@ const AppealsPage: React.FC = () => {
   return (
     <Box sx={PageMainCont}>
       <Box sx={PageMainCont.SubCont}>
-        <PageHeader
-          title="Appeals"
-          totalCountLabel="Total Appeals"
-          searchPlaceholder="Search by violation tracking number"
-          totalCount={totalCount}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          handleSearchKeyDown={handleSearchKeyDown}
-          handleSearch={handleSearch}
-        />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            gap: {
+              xs: 1,
+              md: 2,
+            },
+          }}
+        >
+          <PageHeader
+            title="Appeals"
+            totalCountLabel="Total Appeals"
+            searchPlaceholder="Search by violation tracking number"
+            totalCount={totalCount}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSearchKeyDown={handleSearchKeyDown}
+            handleSearch={handleSearch}
+          />
+        </Box>
         <Box sx={{ position: "relative" }}>
           {isRefetching && <TableLoadingIndicator />}
           <DataTable 

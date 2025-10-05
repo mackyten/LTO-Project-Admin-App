@@ -21,8 +21,42 @@ interface DriversStore {
   isAddModalOpen: boolean,
   setAddModalOpen: (val: boolean) => void;
 
-  // isDriverDialogOpen: boolean;
-  // setDriverDialogOpen: (val: boolean) => void;
+  // Dialog editing states
+  isEditing: boolean;
+  setIsEditing: (val: boolean) => void;
+
+  error: string | null;
+  setError: (val: string | null) => void;
+
+  success: string | null;
+  setSuccess: (val: string | null) => void;
+
+  // Form data state
+  formData: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    mobileNumber: string;
+    driverLicenseNumber: string;
+    plateNumber: string;
+  };
+  setFormData: (val: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    mobileNumber: string;
+    driverLicenseNumber: string;
+    plateNumber: string;
+  }) => void;
+  updateFormField: (field: string, value: string) => void;
+
+  // File states
+  profilePicture: File | null;
+  setProfilePicture: (val: File | null) => void;
+
+  // Helper methods
+  initializeFormData: (driver: DriverModel) => void;
+  resetDialogState: () => void;
 
   reset: () => void;
 }
@@ -45,6 +79,64 @@ const useDriversStore = create<DriversStore>((set) => ({
   isAddModalOpen: false,
   setAddModalOpen: (isAddModalOpen) => set({ isAddModalOpen }),
 
+  // Dialog editing states
+  isEditing: false,
+  setIsEditing: (isEditing: boolean) => set({ isEditing }),
+
+  error: null,
+  setError: (error: string | null) => set({ error }),
+
+  success: null,
+  setSuccess: (success: string | null) => set({ success }),
+
+  // Form data state
+  formData: {
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    mobileNumber: "",
+    driverLicenseNumber: "",
+    plateNumber: "",
+  },
+  setFormData: (formData) => set({ formData }),
+  updateFormField: (field: string, value: string) => set(state => ({
+    formData: {
+      ...state.formData,
+      [field]: value
+    }
+  })),
+
+  // File states
+  profilePicture: null,
+  setProfilePicture: (profilePicture: File | null) => set({ profilePicture }),
+
+  // Helper methods
+  initializeFormData: (driver: DriverModel) => set({
+    formData: {
+      firstName: driver.firstName || "",
+      lastName: driver.lastName || "",
+      middleName: driver.middleName || "",
+      mobileNumber: driver.mobileNumber || "",
+      driverLicenseNumber: driver.driverLicenseNumber || "",
+      plateNumber: driver.plateNumber || "",
+    }
+  }),
+
+  resetDialogState: () => set({
+    isEditing: false,
+    error: null,
+    success: null,
+    profilePicture: null,
+    formData: {
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      mobileNumber: "",
+      driverLicenseNumber: "",
+      plateNumber: "",
+    }
+  }),
+
   reset: () =>
     set({
       pageSize: 10,
@@ -53,6 +145,18 @@ const useDriversStore = create<DriversStore>((set) => ({
       isProfileModalOpen: false,
       selectedDriver: undefined,
       isAddModalOpen: false,
+      isEditing: false,
+      error: null,
+      success: null,
+      profilePicture: null,
+      formData: {
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        mobileNumber: "",
+        driverLicenseNumber: "",
+        plateNumber: "",
+      }
     }),
 }));
 

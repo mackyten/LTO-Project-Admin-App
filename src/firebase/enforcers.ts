@@ -19,6 +19,35 @@ import generateId from "../utils/id_generator";
 import generateQueryKeyPrefixes from "../utils/query_key_generator";
 import type { EnforcerCreateResponseModel } from "./response_models/enforcers_response_model";
 import { sendEmail } from "../utils/emailjs";
+import { createFile, deleteFileIfExists } from "../cloudinary/file_upload";
+
+export interface UpdateEnforcerData {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+  mobileNumber?: string;
+  enforcerIdNumber?: string;
+  profilePicture?: File | null;
+  idBadgePhoto?: File | null;
+}
+
+export interface UpdateEnforcerParams {
+  documentId: string;
+  enforcerData: UpdateEnforcerData;
+}
+
+interface EnforcerUpdateFields {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email?: string;
+  mobileNumber?: string;
+  enforcerIdNumber?: string;
+  profilePictureUrl?: string;
+  badgePhoto?: string;
+  lastUpdatedAt: Date;
+}
 
 /**
  * Adds a new enforcer to thex Firestore 'users' collection.
@@ -120,5 +149,109 @@ export const deleteEnforcers = async (documentId: string): Promise<void> => {
   } catch (e) {
     console.error(`Error processing user with ID ${documentId}: `, e);
     throw e; // Re-throw the error to be handled by the caller
+  }
+};
+
+/**
+ * Update enforcer details with proper file handling
+ * @param params - Document ID and enforcer data
+ * @returns Promise with success status
+ */
+export const updateEnforcer = async (params: UpdateEnforcerParams): Promise<{ isSuccess: boolean; message: string }> => {
+  const { documentId, enforcerData } = params;
+  
+  if (!documentId) {
+    throw new Error("Document ID is required to update enforcer");
+  }
+
+  try {
+    // Get current enforcer document
+    const userRef = doc(db, FirebaseCollections.users, documentId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("Enforcer not found");
+    }
+
+    const currentData = userDoc.data();
+    const oldProfilePictureUrl = currentData.profilePictureUrl || null;
+    const oldIdBadgePhotoUrl = currentData.badgePhoto || null;
+
+    // Rollback tracking
+    let uploadedProfilePicture: string | null = null;
+    let uploadedIdBadgePhoto: string | null = null;
+
+    try {
+      // Handle file uploads (profile picture)
+      if (enforcerData.profilePicture) {
+        const result = await createFile(enforcerData.profilePicture, "profile-pictures");
+        uploadedProfilePicture = result.secure_url;
+      }
+
+      // Handle file uploads (ID badge photo)
+      if (enforcerData.idBadgePhoto) {
+        const result = await createFile(enforcerData.idBadgePhoto, "id-badges");
+        uploadedIdBadgePhoto = result.secure_url;
+      }
+
+      // Prepare update data
+      const updateData: Partial<EnforcerUpdateFields> = {
+        firstName: enforcerData.firstName,
+        lastName: enforcerData.lastName,
+        middleName: enforcerData.middleName || "",
+        mobileNumber: enforcerData.mobileNumber || "",
+        enforcerIdNumber: enforcerData.enforcerIdNumber || "",
+        lastUpdatedAt: new Date(),
+      };
+
+      // Only update email if the enforcer is not registered (uuid is null)
+      if (!currentData.uuid) {
+        updateData.email = enforcerData.email;
+      }
+
+      // Update file URLs if new files were uploaded
+      if (uploadedProfilePicture !== null) {
+        updateData.profilePictureUrl = uploadedProfilePicture;
+      }
+      if (uploadedIdBadgePhoto !== null) {
+        updateData.badgePhoto = uploadedIdBadgePhoto;
+      }
+
+      // Update Firestore document
+      await updateDoc(userRef, updateData);
+
+      // Delete old files after successful update
+      if (uploadedProfilePicture && oldProfilePictureUrl) {
+        await deleteFileIfExists(oldProfilePictureUrl);
+      }
+      if (uploadedIdBadgePhoto && oldIdBadgePhotoUrl) {
+        await deleteFileIfExists(oldIdBadgePhotoUrl);
+      }
+
+      return { isSuccess: true, message: "Enforcer updated successfully" };
+
+    } catch (error) {
+      console.error("Enforcer update failed, initiating rollback:", error);
+
+      // Rollback operations - delete newly uploaded files
+      try {
+        if (uploadedProfilePicture) {
+          await deleteFileIfExists(uploadedProfilePicture);
+        }
+        if (uploadedIdBadgePhoto) {
+          await deleteFileIfExists(uploadedIdBadgePhoto);
+        }
+      } catch (rollbackError) {
+        console.error("Rollback failed:", rollbackError);
+      }
+
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error updating enforcer:", error);
+    return {
+      isSuccess: false,
+      message: error instanceof Error ? error.message : String(error),
+    };
   }
 };

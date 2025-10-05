@@ -10,6 +10,7 @@ import {
   limit,
   startAfter,
   getCountFromServer,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase"; // Assuming you have your Firebase instance here
 import type { DriverModel } from "../models/driver_model";
@@ -48,14 +49,17 @@ export const getDriverByPlateNumber = async (
 
     // 5. Get the first document from the result.
     const doc = querySnapshot.docs[0];
-    const data = doc.data() as DriverModel;
+    const data = doc.data();
 
     // 6. Map the Firestore document data to your DriverModel, including the document ID.
     const driver: DriverModel = {
-      //   documentId: doc.id,
+      documentId: doc.id,
       ...data,
-    };
-    driver.documentId = doc.id;
+      // Convert Firestore Timestamps to JavaScript Dates
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+      lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+      deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+    } as DriverModel;
 
     return driver;
   } catch (e) {
@@ -106,11 +110,17 @@ export const getUsers = async ({
 
     totalCount = countSnapshot.data().count;
     const allUsers = querySnapshot.docs.map(
-      (doc) =>
-        ({
+      (doc) => {
+        const data = doc.data();
+        return {
           documentId: doc.id,
-          ...doc.data(),
-        } as UserModel)
+          ...data,
+          // Convert Firestore Timestamps to JavaScript Dates
+          createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+          lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+          deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+        } as UserModel;
+      }
     );
 
     if (searchQuery) {
@@ -185,13 +195,17 @@ export const getCurrentUser = async (
 
     // 5. Get the first document from the result.
     const doc = querySnapshot.docs[0];
-    const data = doc.data() as UserModel;
+    const data = doc.data();
 
     // 6. Map the Firestore document data to your UserModel, including the document ID.
     const user: UserModel = {
+      documentId: doc.id,
       ...data,
-    };
-    user.documentId = doc.id;
+      // Convert Firestore Timestamps to JavaScript Dates
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+      lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+      deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+    } as UserModel;
 
     return user;
   } catch (e) {

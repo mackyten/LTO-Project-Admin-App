@@ -4,8 +4,14 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getUsers } from "../../../../firebase/users";
 import type { DocumentData } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addEnforcer, deleteEnforcers } from "../../../../firebase/enforcers";
+import {
+  addEnforcer,
+  deleteEnforcers,
+  updateEnforcer,
+} from "../../../../firebase/enforcers";
 import type { EnforcerSchemaType } from "./schema";
+import type { UpdateEnforcerData } from "../../../../firebase/enforcers";
+import useEnforcersStore from "./store";
 
 interface UseUsersParams {
   pageSize: number;
@@ -50,7 +56,7 @@ export const useAddEnforcer = () => {
 
 export const useDeleteEnforcer = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: deleteEnforcers,
     onSuccess: () => {
@@ -60,6 +66,32 @@ export const useDeleteEnforcer = () => {
     onError: (error) => {
       console.error("Error deleting enforcer: ", error);
       alert("Failed to delete enforcer. Please try again.");
+    },
+  });
+};
+
+export const useUpdateEnforcer = () => {
+  const queryClient = useQueryClient();
+  const { setSelectedEnforcer, setProfileModalOpen, setOpenMenuId } =
+    useEnforcersStore();
+  return useMutation({
+    mutationFn: ({
+      documentId,
+      enforcerData,
+    }: {
+      documentId: string;
+      enforcerData: UpdateEnforcerData;
+    }) => updateEnforcer({ documentId, enforcerData }),
+    onSuccess: () => {
+      // Invalidate the 'enforcers' query to force a refetch and update the UI
+      queryClient.invalidateQueries({ queryKey: ["enforcers"] });
+
+      setSelectedEnforcer(undefined);
+      setProfileModalOpen(false);
+      setOpenMenuId(null);
+    },
+    onError: (error) => {
+      console.error("Error updating enforcer: ", error);
     },
   });
 };

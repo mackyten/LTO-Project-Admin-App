@@ -11,7 +11,7 @@ import LatestPayments from "./components/latest_payments";
 import ViolationsByAddressChart from "./components/violations_by_address_chart";
 import ViolationsPerMonthChart from "./components/violations_per_month_chart";
 import PaidVsUnpaidChart from "./components/paid_vs_unpaid_chart";
-import OverturnedViolations from "./components/overturned_violations";
+import ReportsWithAppeals from "./components/reports_with_appeals";
 import TodaysPayments from "./components/todays_payments";
 import SearchBar from "./components/search_bar";
 
@@ -154,7 +154,7 @@ const HomePage: React.FC = () => {
         <Fade in timeout={1400}>
           <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
             <Box sx={{ flex: "1 1 500px", minWidth: "500px" }}>
-              <OverturnedViolations />
+              <ReportsWithAppeals />
             </Box>
             <Box sx={{ flex: "1 1 500px", minWidth: "500px" }}>
               <TodaysPayments />

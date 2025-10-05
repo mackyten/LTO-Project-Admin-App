@@ -143,7 +143,7 @@ export const useRecentActivity = () => {
   const activityData = dashboardQuery.data ? {
     latestViolations: dashboardQuery.data.latestViolations,
     latestPayments: dashboardQuery.data.latestPayments,
-    overturnedViolations: dashboardQuery.data.overturnedViolations,
+    reportsWithAppeals: dashboardQuery.data.reportsWithAppeals,
     todaysPayments: dashboardQuery.data.todaysPayments,
   } : null;
 
@@ -157,7 +157,7 @@ export const useRecentActivity = () => {
     // Individual activity data getters
     latestViolations: activityData?.latestViolations || [],
     latestPayments: activityData?.latestPayments || [],
-    overturnedViolations: activityData?.overturnedViolations || [],
+    reportsWithAppeals: activityData?.reportsWithAppeals || [],
     todaysPayments: activityData?.todaysPayments || [],
   };
 };

@@ -33,8 +33,8 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
   const { openMenuId, setOpenMenuId, setSelectedDriver, setProfileModalOpen } =
     useDriversStore();
 
-  const handleToggle = (reportId: string) => {
-    setOpenMenuId(openMenuId === reportId ? null : reportId);
+  const handleToggle = (driverId: string) => {
+    setOpenMenuId(openMenuId === driverId ? null : driverId);
   };
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -99,9 +99,10 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
             </TableRow>
           ) : (
             drivers.map((driver, index) => {
-              const isOpen = openMenuId === driver.documentId;
+              const driverId = driver.documentId || driver.uuid || `driver-${index}`;
+              const isOpen = openMenuId === driverId;
               return (
-                <TableRow key={driver.documentId}>
+                <TableRow key={driverId}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell sx={{ width: 50, paddingRight: 0 }}>
                     <Avatar
@@ -118,25 +119,19 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
                   <TableCell>
                     <IconButton
                       ref={(el) => {
-                        if (driver.documentId) {
-                          anchorRefs.current[driver.documentId] = el;
+                        if (driverId) {
+                          anchorRefs.current[driverId] = el;
                         }
                       }}
-                      id={`composition-button-${
-                        driver.documentId || driver.uuid
-                      }`}
+                      id={`composition-button-${driverId}`}
                       aria-controls={
                         isOpen
-                          ? `composition-menu-${
-                              driver.documentId || driver.uuid
-                            }`
+                          ? `composition-menu-${driverId}`
                           : undefined
                       }
                       aria-expanded={isOpen ? "true" : undefined}
                       aria-haspopup="true"
-                      onClick={() =>
-                        handleToggle(driver.documentId || driver.uuid)
-                      }
+                      onClick={() => handleToggle(driverId)}
                     >
                       <MoreVert
                         sx={{
@@ -146,7 +141,7 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
                     </IconButton>
                     <Popper
                       open={isOpen}
-                      anchorEl={anchorRefs.current[driver.documentId ?? index]}
+                      anchorEl={anchorRefs.current[driverId]}
                       role={undefined}
                       placement="bottom-start"
                       transition
@@ -167,8 +162,8 @@ export const DataTable: React.FC<IDataTable> = ({ drivers }) => {
                             <ClickAwayListener onClickAway={handleClose}>
                               <MenuList
                                 autoFocusItem={isOpen}
-                                id={`composition-menu-${driver.documentId}`}
-                                aria-labelledby={`composition-button-${driver.documentId}`}
+                                id={`composition-menu-${driverId}`}
+                                aria-labelledby={`composition-button-${driverId}`}
                                 onKeyDown={handleListKeyDown}
                                 sx={{
                                   color: "secondary.main",

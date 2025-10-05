@@ -12,20 +12,20 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { Payment } from "@mui/icons-material";
+import { Balance } from "@mui/icons-material";
 import { useRecentActivity } from "../hooks";
 import { format } from "date-fns";
 
-// Latest Payments Component - Requirement 6
-const LatestPayments: React.FC = () => {
-  const { latestPayments, isLoading } = useRecentActivity();
+// Reports with Appeals Component - Requirement 10
+const ReportsWithAppeals: React.FC = () => {
+  const { reportsWithAppeals, isLoading } = useRecentActivity();
 
   if (isLoading) {
     return (
       <Card sx={{ height: "100%" }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Latest Payments
+            Reports with Appeals
           </Typography>
           <Skeleton variant="rectangular" height={300} />
         </CardContent>
@@ -37,10 +37,10 @@ const LatestPayments: React.FC = () => {
     <Card sx={{ height: "100%" }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          <Payment
+          <Balance
             sx={{ mr: 1, verticalAlign: "middle", color: "info.main" }}
           />
-          Latest Payments
+          Reports with Appeals
         </Typography>
         <TableContainer
           component={Paper}
@@ -50,35 +50,31 @@ const LatestPayments: React.FC = () => {
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell>Tracking Number</TableCell>
+                <TableCell>Plate Number</TableCell>
                 <TableCell>Driver Name</TableCell>
-                <TableCell>Amount</TableCell>
                 <TableCell>Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {latestPayments.slice(0, 5).map((payment, index) => (
+              {reportsWithAppeals.slice(0, 5).map((violation, index) => (
                 <TableRow key={index} hover>
-                  <TableCell>{payment.violatorFullName}</TableCell>
+                  <TableCell>{violation.trackingNumber || 'N/A'}</TableCell>
+                  <TableCell>{violation.plateNumber}</TableCell>
+                  <TableCell>{violation.fullname}</TableCell>
                   <TableCell>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="success.main"
-                    >
-                      ₱{payment.amount.toLocaleString()}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(payment.paidAt), "MMM dd, yyyy")}
+                    {violation.createdAt
+                      ? format(new Date(violation.createdAt), "MMM dd, yyyy")
+                      : "N/A"}
                   </TableCell>
                 </TableRow>
               ))}
               {/* Show message when there's no data */}
-              {latestPayments.length === 0 && (
+              {reportsWithAppeals.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No payments
+                      No reports need to be reviewed
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -91,4 +87,4 @@ const LatestPayments: React.FC = () => {
   );
 };
 
-export default LatestPayments;
+export default ReportsWithAppeals;

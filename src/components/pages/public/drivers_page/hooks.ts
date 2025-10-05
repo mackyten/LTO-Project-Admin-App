@@ -1,8 +1,9 @@
 import type { DocumentData } from "firebase/firestore";
 import type { DriverModel } from "../../../../models/driver_model";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers } from "../../../../firebase/users";
 import { UserRoles } from "../../../../enums/roles";
+import { updateDriver, type UpdateDriverData } from "../../../../firebase/drivers";
 
 interface UseUsersParams {
   pageSize: number;
@@ -31,5 +32,21 @@ export const useDrivers = ({
       }),
     getNextPageParam: (lastPage) => lastPage.lastDoc ?? undefined,
     initialPageParam: null,
+  });
+};
+
+export const useUpdateDriver = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ documentId, driverData }: { documentId: string; driverData: UpdateDriverData }) =>
+      updateDriver({ documentId, driverData }),
+    onSuccess: () => {
+      // Invalidate the 'drivers' query to force a refetch and update the UI
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
+    },
+    onError: (error) => {
+      console.error("Error updating driver: ", error);
+    },
   });
 };

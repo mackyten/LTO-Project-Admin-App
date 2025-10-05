@@ -45,7 +45,7 @@ const TodaysPayments: React.FC = () => {
         <TableContainer
           component={Paper}
           variant="outlined"
-          sx={{ mt: 2, maxHeight: 200 }}
+          sx={{ mt: 2, maxHeight: 400 }}
         >
           <Table size="small" stickyHeader>
             <TableHead>
@@ -73,6 +73,16 @@ const TodaysPayments: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))}
+              {/* Show message when there's no data */}
+              {todaysPayments.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No one paid today
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>

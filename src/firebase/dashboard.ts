@@ -48,7 +48,7 @@ export interface DashboardData {
   };
 
   // New Requirements
-  overturnedViolations: ReportModel[];
+  reportsWithAppeals: ReportModel[];
   todaysPayments: PaymentModel[];
 
   // Additional Insights
@@ -315,17 +315,29 @@ export const getDashboardData = async (): Promise<DashboardData> => {
     );
     const latestPayments = await enrichPaymentsWithDriverNames(latestPaymentsRaw);
 
-    // Query overturned violations (last 5)
-    const overturnedQuery = query(
-      reportsRef,
-      where("status", "==", "Overturned"),
+    // Query reports with appeals (last 5)
+    const appealsRef = collection(db, FirebaseCollections.appeals);
+    const appealsQuery = query(
+      appealsRef,
+      where("status", "==", "Pending"),
       orderBy("createdAt", "desc"),
       limit(5)
     );
-    const overturnedSnapshot = await getDocs(overturnedQuery);
-    const overturnedViolations: ReportModel[] = overturnedSnapshot.docs.map(
-      convertToReportModel
-    );
+    const appealsSnapshot = await getDocs(appealsQuery);
+    
+    // Get tracking numbers from appeals
+    const trackingNumbers = appealsSnapshot.docs.map(doc => doc.data().violationTrackingNumber);
+    // Query reports that match the tracking numbers
+    let reportsWithAppeals: ReportModel[] = [];
+    if (trackingNumbers.length > 0) {
+      const reportsWithAppealsQuery = query(
+        reportsRef,
+        where("trackingNumber", "in", trackingNumbers),
+        orderBy("createdAt", "desc")
+      );
+      const reportsWithAppealsSnapshot = await getDocs(reportsWithAppealsQuery);
+      reportsWithAppeals = reportsWithAppealsSnapshot.docs.map(convertToReportModel);
+    }
 
     // Query today's payments (drivers who paid today)
     const todaysPaymentsQuery = query(
@@ -396,7 +408,7 @@ export const getDashboardData = async (): Promise<DashboardData> => {
       busiestLocations,
 
       // New Requirements
-      overturnedViolations,
+      reportsWithAppeals,
       todaysPayments,
     };
   } catch (error) {

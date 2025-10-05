@@ -13,21 +13,20 @@ import {
   TableRow,
   Chip,
 } from "@mui/material";
-import { Gavel } from "@mui/icons-material";
+import { Balance } from "@mui/icons-material";
 import { useRecentActivity } from "../hooks";
 import { format } from "date-fns";
-import { statusChipStyles } from "../../../../../utils/status_utils";
 
-// Overturned Violations Component - Requirement 10
-const OverturnedViolations: React.FC = () => {
-  const { overturnedViolations, isLoading } = useRecentActivity();
+// Reports with Appeals Component - Requirement 10
+const ReportsWithAppeals: React.FC = () => {
+  const { reportsWithAppeals, isLoading } = useRecentActivity();
 
   if (isLoading) {
     return (
       <Card sx={{ height: "100%" }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Recent violations need to review
+            Reports with Appeals
           </Typography>
           <Skeleton variant="rectangular" height={300} />
         </CardContent>
@@ -39,10 +38,10 @@ const OverturnedViolations: React.FC = () => {
     <Card sx={{ height: "100%" }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          <Gavel
-            sx={{ mr: 1, verticalAlign: "middle", color: "warning.main" }}
+          <Balance
+            sx={{ mr: 1, verticalAlign: "middle", color: "info.main" }}
           />
-          Recent Violations Need to Review
+          Reports with Appeals
         </Typography>
         <TableContainer
           component={Paper}
@@ -52,6 +51,7 @@ const OverturnedViolations: React.FC = () => {
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell>Tracking Number</TableCell>
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Driver Name</TableCell>
                 <TableCell>Date</TableCell>
@@ -59,8 +59,9 @@ const OverturnedViolations: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {overturnedViolations.slice(0, 5).map((violation, index) => (
+              {reportsWithAppeals.slice(0, 5).map((violation, index) => (
                 <TableRow key={index} hover>
+                  <TableCell>{violation.trackingNumber || 'N/A'}</TableCell>
                   <TableCell>{violation.plateNumber}</TableCell>
                   <TableCell>{violation.fullname}</TableCell>
                   <TableCell>
@@ -70,15 +71,21 @@ const OverturnedViolations: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label="Overturned"
+                      label="Has Appeal"
                       size="small"
-                      color="primary"
-                      icon={<Gavel sx={{ color: "primary.main" }} />}
-                      sx={statusChipStyles}
+                      color="info"
+                      icon={<Balance sx={{ color: "info.main" }} />}
                     />
                   </TableCell>
                 </TableRow>
               ))}
+              {reportsWithAppeals.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    No reports with appeals found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -87,4 +94,4 @@ const OverturnedViolations: React.FC = () => {
   );
 };
 
-export default OverturnedViolations;
+export default ReportsWithAppeals;

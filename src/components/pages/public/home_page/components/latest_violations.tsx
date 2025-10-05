@@ -16,7 +16,10 @@ import {
 import { Warning } from "@mui/icons-material";
 import { useRecentActivity } from "../hooks";
 import { format } from "date-fns";
-import { getStatusColor, statusChipStyles } from "../../../../../utils/status_utils";
+import {
+  getStatusColor,
+  statusChipStyles,
+} from "../../../../../utils/status_utils";
 
 // Latest Violations Component - Requirement 5
 const LatestViolations: React.FC = () => {
@@ -42,7 +45,7 @@ const LatestViolations: React.FC = () => {
           <Warning
             sx={{ mr: 1, verticalAlign: "middle", color: "warning.main" }}
           />
-          Latest Violations (5)
+          Latest Violations
         </Typography>
         <TableContainer
           component={Paper}

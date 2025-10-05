@@ -26,7 +26,7 @@ export const useAppeals = ({
     lastDoc: DocumentData | null;
     totalCount: number;
   }>({
-    queryKey: ["appeals", searchQuery],
+    queryKey: ["appeals"],
     queryFn: ({ pageParam }) =>
       getAppeals({
         pageSize,

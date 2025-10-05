@@ -24,8 +24,45 @@ interface EnforcersStore {
   isAddModalOpen: boolean,
   setAddModalOpen: (val: boolean) => void;
 
-  // isDriverDialogOpen: boolean;
-  // setDriverDialogOpen: (val: boolean) => void;
+  // Dialog editing states
+  isEditing: boolean;
+  setIsEditing: (val: boolean) => void;
+
+  error: string | null;
+  setError: (val: string | null) => void;
+
+  success: string | null;
+  setSuccess: (val: string | null) => void;
+
+  // Form data state
+  formData: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    email: string;
+    mobileNumber: string;
+    enforcerIdNumber: string;
+  };
+  setFormData: (val: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    email: string;
+    mobileNumber: string;
+    enforcerIdNumber: string;
+  }) => void;
+  updateFormField: (field: string, value: string) => void;
+
+  // File states
+  profilePicture: File | null;
+  setProfilePicture: (val: File | null) => void;
+
+  idBadgePhoto: File | null;
+  setIdBadgePhoto: (val: File | null) => void;
+
+  // Helper methods
+  initializeFormData: (enforcer: EnforcerModel) => void;
+  resetDialogState: () => void;
 
   reset: () => void;
 }
@@ -41,9 +78,6 @@ const useEnforcersStore = create<EnforcersStore>((set) => ({
   isProfileModalOpen: false,
   setProfileModalOpen: (isProfileModalOpen) => set({ isProfileModalOpen }),
 
-  // isDriverDialogOpen: false,
-  // setDriverDialogOpen: (isDriverDialogOpen) => set({ isDriverDialogOpen }),
-
   selectedEnforcer: undefined,
   setSelectedEnforcer: (selectedEnforcer: EnforcerModel | undefined) =>
     set({ selectedEnforcer }),
@@ -55,12 +89,86 @@ const useEnforcersStore = create<EnforcersStore>((set) => ({
   isAddModalOpen: false,
   setAddModalOpen: (isAddModalOpen) => set({ isAddModalOpen }),
 
+  // Dialog editing states
+  isEditing: false,
+  setIsEditing: (isEditing: boolean) => set({ isEditing }),
+
+  error: null,
+  setError: (error: string | null) => set({ error }),
+
+  success: null,
+  setSuccess: (success: string | null) => set({ success }),
+
+  // Form data state
+  formData: {
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    email: "",
+    mobileNumber: "",
+    enforcerIdNumber: "",
+  },
+  setFormData: (formData) => set({ formData }),
+  updateFormField: (field: string, value: string) => set(state => ({
+    formData: {
+      ...state.formData,
+      [field]: value
+    }
+  })),
+
+  // File states
+  profilePicture: null,
+  setProfilePicture: (profilePicture: File | null) => set({ profilePicture }),
+
+  idBadgePhoto: null,
+  setIdBadgePhoto: (idBadgePhoto: File | null) => set({ idBadgePhoto }),
+
+  // Helper methods
+  initializeFormData: (enforcer: EnforcerModel) => set({
+    formData: {
+      firstName: enforcer.firstName || "",
+      lastName: enforcer.lastName || "",
+      middleName: enforcer.middleName || "",
+      email: enforcer.email || "",
+      mobileNumber: enforcer.mobileNumber || "",
+      enforcerIdNumber: enforcer.enforcerIdNumber || "",
+    }
+  }),
+
+  resetDialogState: () => set({
+    isEditing: false,
+    error: null,
+    success: null,
+    profilePicture: null,
+    idBadgePhoto: null,
+    formData: {
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      email: "",
+      mobileNumber: "",
+      enforcerIdNumber: "",
+    }
+  }),
+
   reset: () =>
     set({
       pageSize: 10,
       searchQuery: "",
       openMenuId: null,
-      /// isFullDetailDialogOpen: false,
+      isEditing: false,
+      error: null,
+      success: null,
+      profilePicture: null,
+      idBadgePhoto: null,
+      formData: {
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        email: "",
+        mobileNumber: "",
+        enforcerIdNumber: "",
+      }
     }),
 }));
 

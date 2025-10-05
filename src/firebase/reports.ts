@@ -95,7 +95,17 @@ export const getReports = async ({
       // You cannot use orderBy on a field that is not part of the where clause.
       // Therefore, we sort the results in memory.
       const sortedReports = querySnapshot.docs
-        .map((doc) => doc.data() as ReportModel)
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            documentId: doc.id,
+            ...data,
+            // Convert Firestore Timestamps to JavaScript Dates
+            createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+            lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+            deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+          } as unknown as ReportModel;
+        })
         .sort((a, b) => {
           let aTime, bTime;
 
@@ -118,10 +128,7 @@ export const getReports = async ({
 
           return bTime - aTime;
         });
-      reports = sortedReports.map((data) => ({
-        ...data,
-        documentId: (data as DocumentData).documentId,
-      }));
+      reports = sortedReports;
 
       // Find the last visible document based on the in-memory sorted array
       if (querySnapshot.docs.length > 0) {
@@ -144,7 +151,11 @@ export const getReports = async ({
         return {
           documentId: doc.id,
           ...data,
-        } as ReportModel;
+          // Convert Firestore Timestamps to JavaScript Dates
+          createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+          lastUpdatedAt: data.lastUpdatedAt instanceof Timestamp ? data.lastUpdatedAt.toDate() : data.lastUpdatedAt,
+          deletedAt: data.deletedAt instanceof Timestamp ? data.deletedAt.toDate() : data.deletedAt,
+        } as unknown as ReportModel;
       });
 
       if (!querySnapshot.empty) {

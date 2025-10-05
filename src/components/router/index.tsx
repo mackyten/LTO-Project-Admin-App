@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
 import AppLayout from "../../layouts/app_layout";
 import AuthStatusWrapper from "../auth_status_wrapper";
+import { Box, CircularProgress } from "@mui/material";
 
 // Lazy imports
 const LoginPage = lazy(() => import("../pages/auth/login_page"));
@@ -26,7 +27,12 @@ const PaymentFailedPage = lazy(
 
 // A simple wrapper for Suspense
 const withSuspense = (Component: React.ReactNode) => (
-  <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
+  <Suspense fallback={<Box sx={{
+    width: "100vw", height: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}><CircularProgress /></Box>}>{Component}</Suspense>
 );
 
 const router = createBrowserRouter([
