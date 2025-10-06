@@ -1,8 +1,8 @@
 import React from "react";
-import { Grid, TextField, Typography, Divider } from "@mui/material";
+import { Grid, TextField, Typography } from "@mui/material";
 import { Controller } from "react-hook-form";
 import type { Control, FieldErrors } from "react-hook-form";
-import { ImageUpload } from "./image_upload";
+//import { ImageUpload } from "./image_upload";
 import type { AccountData } from "./types";
 
 interface AccountEditFormProps {
@@ -17,10 +17,10 @@ interface AccountEditFormProps {
 export const AccountEditForm: React.FC<AccountEditFormProps> = ({
   control,
   errors,
-  idBadgePhoto,
-  idBadgePhotoUrl,
-  onIdBadgePhotoChange,
-  isEditing,
+  // idBadgePhoto,
+  // idBadgePhotoUrl,
+  // onIdBadgePhotoChange,
+  // isEditing,
 }) => {
   return (
     <Grid container spacing={3}>
@@ -143,7 +143,7 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({
       </Grid>
 
       {/* ID Badge Photo */}
-      <Grid size={12}>
+      {/* <Grid size={12}>
         <Divider sx={{ my: 2 }} />
         <Typography variant="h6" sx={{ mb: 2 }}>
           ID Badge Photo
@@ -159,7 +159,7 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({
           isEditing={isEditing}
           size={120}
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };
