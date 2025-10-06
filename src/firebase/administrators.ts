@@ -206,11 +206,11 @@ export const deleteAdmin = async (documentId: string): Promise<void> => {
     }
 
     const userData = userDoc.data();
-    if(UserRoles.SuperAdmin)
+    const roles = userData.roles || [];
+    if(roles.includes(UserRoles.SuperAdmin))
     {
       throw new Error("Cannot delete a Super Admin.");
     }
-    const roles = userData.roles || [];
     if (roles.length === 1 && roles[0] === UserRoles.Admin) {
       // Only Enforcer role, delete the document permanently
       await deleteDoc(userRef);
