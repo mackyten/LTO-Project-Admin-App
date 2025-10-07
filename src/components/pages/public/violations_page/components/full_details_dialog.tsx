@@ -14,7 +14,6 @@ import {
   Stack,
   alpha,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import useViolationsStore from "../store";
 import { FormatDate } from "../../../../../utils/date_formatter";
@@ -31,13 +30,12 @@ import {
   Gavel as GavelIcon,
   CameraAlt as CameraAltIcon,
   Assignment as AssignmentIcon,
-  PictureAsPdf as PdfIcon,
+
 } from "@mui/icons-material";
 import { mainColor } from "../../../../../themes/colors";
 import { Transition } from "../../../../shared/transition";
 import type { ViolationModel } from "../../../../../models/violation_model";
-import jsPDF from "jspdf";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export const FullDetailsDialog: React.FC = () => {
   const {
@@ -47,7 +45,6 @@ export const FullDetailsDialog: React.FC = () => {
     setSelectedReport,
   } = useViolationsStore();
 
-  const [isExporting, setIsExporting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
@@ -55,181 +52,6 @@ export const FullDetailsDialog: React.FC = () => {
     setSelectedReport(undefined);
   };
 
-  const handleExportToPDF = async () => {
-    if (!selectedReport) return;
-
-    try {
-      setIsExporting(true);
-
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
-
-      const pageWidth = 210;
-      const margin = 20;
-      const contentWidth = pageWidth - 2 * margin;
-      
-      let yPosition = margin;
-
-      // Helper function to add text with automatic line wrapping
-      const addText = (text: string, x: number, y: number, options: {
-        fontSize?: number;
-        maxWidth?: number;
-        align?: 'left' | 'center' | 'right';
-        bold?: boolean;
-      } = {}) => {
-        const fontSize = options.fontSize || 10;
-        const maxWidth = options.maxWidth || contentWidth;
-        const align = options.align || 'left';
-        
-        pdf.setFontSize(fontSize);
-        if (options.bold) pdf.setFont('helvetica', 'bold');
-        else pdf.setFont('helvetica', 'normal');
-        
-        const lines = pdf.splitTextToSize(text, maxWidth);
-        pdf.text(lines, x, y, { align });
-        
-        return y + (lines.length * fontSize * 0.35277778); // Convert pt to mm
-      };
-
-      // Helper function to draw a box
-      const drawBox = (x: number, y: number, width: number, height: number) => {
-        pdf.rect(x, y, width, height);
-      };
-
-      // Header Section
-      pdf.setFillColor(240, 240, 240);
-      pdf.rect(margin, yPosition, contentWidth, 15, 'F');
-      yPosition = addText('REPUBLIC OF THE PHILIPPINES', margin + 5, yPosition + 5, { fontSize: 12, bold: true, align: 'center', maxWidth: contentWidth });
-      yPosition = addText('Department of Transportation', margin + 5, yPosition, { fontSize: 10, align: 'center', maxWidth: contentWidth });
-      yPosition = addText('LAND TRANSPORTATION OFFICE', margin + 5, yPosition, { fontSize: 11, bold: true, align: 'center', maxWidth: contentWidth });
-      
-      yPosition += 10;
-
-      // Title
-      yPosition = addText('TRAFFIC VIOLATION REPORT', margin, yPosition, { fontSize: 14, bold: true, align: 'center', maxWidth: contentWidth });
-      yPosition += 10;
-
-      // Report Information Box
-      drawBox(margin, yPosition, contentWidth, 25);
-      yPosition = addText('REPORT INFORMATION', margin + 5, yPosition + 5, { fontSize: 11, bold: true });
-      yPosition += 3;
-      
-      // Report details in two columns
-      const col1Width = contentWidth / 2 - 5;
-      const col2X = margin + col1Width + 10;
-      
-      yPosition = addText(`Tracking Number: ${selectedReport.trackingNumber || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: col1Width });
-      addText(`Date: ${FormatDate(selectedReport.createdAt) || 'N/A'}`, col2X, yPosition - 3, { fontSize: 9, maxWidth: col1Width });
-      yPosition = addText(`Status: ${getDisplayStatus(selectedReport.status) || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: col1Width });
-      
-      yPosition += 10;
-
-      // Personal Information Section
-      drawBox(margin, yPosition, contentWidth, 30);
-      yPosition = addText('PERSONAL INFORMATION', margin + 5, yPosition + 5, { fontSize: 11, bold: true });
-      yPosition += 3;
-      
-      yPosition = addText(`Full Name: ${selectedReport.fullname || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: contentWidth - 10 });
-      yPosition = addText(`Phone Number: ${selectedReport.phoneNumber || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: col1Width });
-      addText(`License Number: ${selectedReport.licenseNumber || 'N/A'}`, col2X, yPosition - 3, { fontSize: 9, maxWidth: col1Width });
-      yPosition = addText(`Address: ${selectedReport.address || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: contentWidth - 10 });
-      yPosition = addText(`Plate Number: ${selectedReport.plateNumber || 'N/A'}`, margin + 5, yPosition, { fontSize: 9, maxWidth: contentWidth - 10 });
-      
-      yPosition += 10;
-
-      // Violations Section
-      const violationsHeight = Math.max(40, (selectedReport.violations?.length || 0) * 8 + 15);
-      drawBox(margin, yPosition, contentWidth, violationsHeight);
-      yPosition = addText('VIOLATIONS COMMITTED', margin + 5, yPosition + 5, { fontSize: 11, bold: true });
-      yPosition += 5;
-
-      if (selectedReport.violations && selectedReport.violations.length > 0) {
-        selectedReport.violations.forEach((violation, index) => {
-          // Format repetition as ordinal numbers
-          const formatRepetition = (repetition: string | number): string => {
-            const num = typeof repetition === 'string' ? parseInt(repetition) : repetition;
-            if (isNaN(num) || num <= 0) return '1st';
-            const cappedNum = Math.min(num, 3);
-            switch (cappedNum) {
-              case 1: return '1st';
-              case 2: return '2nd';
-              case 3: return '3rd';
-              default: return '1st';
-            }
-          };
-
-          // Format price in Philippine currency
-          const formatPrice = (price: string | number): string => {
-            const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-            if (isNaN(numPrice)) return '₱0.00';
-            return new Intl.NumberFormat('en-PH', {
-              style: 'currency',
-              currency: 'PHP',
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(numPrice);
-          };
-
-          yPosition = addText(`${index + 1}. ${violation.violationName} - ${formatRepetition(violation.repetition)} - ${formatPrice(violation.price)}`, margin + 5, yPosition, { fontSize: 9, maxWidth: contentWidth - 10 });
-        });
-      } else {
-        yPosition = addText('No violations recorded', margin + 5, yPosition, { fontSize: 9, maxWidth: contentWidth - 10 });
-      }
-
-      yPosition = Math.max(yPosition, yPosition + violationsHeight - 15);
-      yPosition += 10;
-
-      // Evidence Section
-      drawBox(margin, yPosition, contentWidth, 20);
-      yPosition = addText('EVIDENCE AND DOCUMENTATION', margin + 5, yPosition + 5, { fontSize: 11, bold: true });
-      yPosition += 3;
-      yPosition = addText('☐ License Photo Available', margin + 5, yPosition, { fontSize: 9 });
-      yPosition = addText('☐ Plate Photo Available', margin + 5, yPosition, { fontSize: 9 });
-      yPosition = addText('☐ Evidence Photo Available', margin + 5, yPosition, { fontSize: 9 });
-      
-      yPosition += 15;
-
-      // Certification Section
-      drawBox(margin, yPosition, contentWidth, 30);
-      yPosition = addText('CERTIFICATION', margin + 5, yPosition + 5, { fontSize: 11, bold: true });
-      yPosition += 5;
-      yPosition = addText('I certify that:', margin + 5, yPosition, { fontSize: 9, bold: true });
-      yPosition = addText('1. The information provided in this report is true and correct.', margin + 5, yPosition, { fontSize: 9 });
-      yPosition = addText('2. The evidence attached supports the violations listed above.', margin + 5, yPosition, { fontSize: 9 });
-      yPosition = addText('3. This report was generated electronically and is valid without signature.', margin + 5, yPosition, { fontSize: 9 });
-      
-      yPosition += 15;
-
-      // Footer
-      drawBox(margin, yPosition, contentWidth / 2 - 5, 25);
-      addText('ENFORCER INFORMATION', margin + 5, yPosition + 5, { fontSize: 10, bold: true });
-      addText('Name: ________________', margin + 5, yPosition + 10, { fontSize: 9 });
-      addText('Badge No: ____________', margin + 5, yPosition + 15, { fontSize: 9 });
-      addText('Signature: ____________', margin + 5, yPosition + 20, { fontSize: 9 });
-
-      drawBox(col2X, yPosition, contentWidth / 2 - 5, 25);
-      addText('REPORT DETAILS', col2X + 5, yPosition + 5, { fontSize: 10, bold: true });
-      addText(`Generated: ${new Date().toLocaleDateString()}`, col2X + 5, yPosition + 10, { fontSize: 9 });
-      addText(`Time: ${new Date().toLocaleTimeString()}`, col2X + 5, yPosition + 15, { fontSize: 9 });
-      addText('System: LTO AutoFine', col2X + 5, yPosition + 20, { fontSize: 9 });
-
-      // Generate filename with tracking number and date
-      const filename = `violation_report_${selectedReport.trackingNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
-      
-      // Download the PDF
-      pdf.save(filename);
-      
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      // You can add a toast notification here if you have one
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   return (
     <>
