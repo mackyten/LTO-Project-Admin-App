@@ -389,6 +389,7 @@ export const FullDetailsDialog: React.FC = () => {
           >
             {isExporting ? 'Generating PDF...' : 'Export to PDF'}
           </Button> */}
+          
           <Button
             variant="outlined"
             onClick={handleClose}
