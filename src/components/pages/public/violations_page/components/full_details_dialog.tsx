@@ -14,6 +14,7 @@ import {
   Stack,
   alpha,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import useViolationsStore from "../store";
 import { FormatDate } from "../../../../../utils/date_formatter";
@@ -30,12 +31,13 @@ import {
   Gavel as GavelIcon,
   CameraAlt as CameraAltIcon,
   Assignment as AssignmentIcon,
-
+  PictureAsPdf as PdfIcon,
 } from "@mui/icons-material";
 import { mainColor } from "../../../../../themes/colors";
 import { Transition } from "../../../../shared/transition";
 import type { ViolationModel } from "../../../../../models/violation_model";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { generateViolationReportPDF } from "../../../../../utils/pdf_generator";
 
 export const FullDetailsDialog: React.FC = () => {
   const {
@@ -46,11 +48,43 @@ export const FullDetailsDialog: React.FC = () => {
   } = useViolationsStore();
 
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleClose = () => {
     setFullDetailDialogOpen(false);
     setSelectedReport(undefined);
   };
+
+  const handleExportToPDF = async () => {
+    if (!selectedReport) return;
+
+    try {
+      setIsExporting(true);
+      
+      // Generate PDF using the utility
+      await generateViolationReportPDF({
+        trackingNumber: selectedReport.trackingNumber || undefined,
+        createdAt: selectedReport.createdAt || undefined,
+        status: selectedReport.status || undefined,
+        fullname: selectedReport.fullname || undefined,
+        phoneNumber: selectedReport.phoneNumber || undefined,
+        address: selectedReport.address || undefined,
+        licenseNumber: selectedReport.licenseNumber || undefined,
+        plateNumber: selectedReport.plateNumber || undefined,
+        violations: selectedReport.violations || undefined,
+        evidencePhoto: selectedReport.evidencePhoto || undefined,
+        licensePhoto: selectedReport.licensePhoto || undefined,
+        platePhoto: selectedReport.platePhoto || undefined,
+      });
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // You can add a toast notification here if you have one
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
 
 
   return (
@@ -373,7 +407,7 @@ export const FullDetailsDialog: React.FC = () => {
         <Divider />
 
         <DialogActions sx={{ p: 3, backgroundColor: alpha("#f8fafc", 0.5) }}>
-          {/* <Button
+          <Button
             variant="contained"
             onClick={handleExportToPDF}
             disabled={isExporting}
@@ -386,8 +420,9 @@ export const FullDetailsDialog: React.FC = () => {
               mr: 'auto',
             }}
           >
-            {isExporting ? 'Generating PDF...' : 'Export to PDF'}
-          </Button> */}
+            {isExporting ? 'Generating PDF...' : 'EXPORT TO PDF'}
+          </Button>
+          
           <Button
             variant="outlined"
             onClick={handleClose}
