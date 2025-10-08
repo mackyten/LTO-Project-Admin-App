@@ -19,6 +19,7 @@ interface ReportData {
 export class PDFGenerator {
   private pdf: jsPDF;
   private pageWidth: number;
+  private pageHeight: number;
   private margin: number;
   private contentWidth: number;
   private yPosition: number;
@@ -31,6 +32,7 @@ export class PDFGenerator {
     });
     
     this.pageWidth = 216; // US Legal width
+    this.pageHeight = 356; // US Legal height
     this.margin = 20;
     this.contentWidth = this.pageWidth - 2 * this.margin;
     this.yPosition = this.margin;
@@ -50,6 +52,94 @@ export class PDFGenerator {
     this.pdf.setFontSize(fontSize);
     this.pdf.setFont('helvetica', options.bold ? 'bold' : 'normal');
     this.pdf.text(text, x, y, { align: options.align || 'left' });
+  }
+
+  private addFooter(): void {
+    const pageHeight = this.pdf.internal.pageSize.getHeight();
+    const footerY = pageHeight - 15; // 15mm from bottom
+    
+    const now = new Date();
+    const reportTime = now.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    // Add a line above the footer
+    this.pdf.setLineWidth(0.1);
+    this.pdf.line(this.margin, footerY - 5, this.pageWidth - this.margin, footerY - 5);
+    
+    // Add timestamp on the left
+    this.addText(
+      `Report generated on ${reportTime}`,
+      this.margin,
+      footerY,
+      { fontSize: 8 }
+    );
+  }
+
+  private addPageNumbers(): void {
+    const totalPages = this.pdf.getNumberOfPages();
+    const pageHeight = this.pdf.internal.pageSize.getHeight();
+    const footerY = pageHeight - 15; // 15mm from bottom
+    
+    // Add page numbers to all pages
+    for (let i = 1; i <= totalPages; i++) {
+      this.pdf.setPage(i);
+      this.addText(
+        `Page ${i} of ${totalPages}`,
+        this.pageWidth - this.margin,
+        footerY,
+        { fontSize: 8, align: 'right' }
+      );
+    }
+  }
+
+  private checkPageBreak(requiredHeight: number): void {
+    if (this.yPosition + requiredHeight > this.pageHeight - this.margin - 20) { // Extra space for footer
+      this.addFooter(); // Add footer to current page before adding new page
+      this.pdf.addPage();
+      this.yPosition = this.margin;
+    }
+  }
+
+  private drawTableWithPageBreaks(x: number, y: number, width: number, rows: Array<{
+    cells: Array<{ text: string; width: number; bold?: boolean }>;
+    height: number;
+  }>): number {
+    let currentY = y;
+    
+    rows.forEach(row => {
+      // Check if we need a page break before drawing this row
+      this.checkPageBreak(row.height);
+      currentY = this.yPosition;
+      
+      let currentX = x;
+      
+      if (row.cells.some(cell => cell.bold)) {
+        this.pdf.setFillColor(240, 240, 240);
+        this.pdf.rect(x, currentY, width, row.height, 'F');
+      }
+      
+      row.cells.forEach(cell => {
+        this.pdf.rect(currentX, currentY, cell.width, row.height);
+        this.addText(
+          cell.text, 
+          currentX + 2, 
+          currentY + (row.height / 2) + 1.5, 
+          { bold: cell.bold, fontSize: cell.bold ? 11 : 10 }
+        );
+        currentX += cell.width;
+      });
+      
+      currentY += row.height;
+      this.yPosition = currentY;
+    });
+    
+    return currentY;
   }
 
   private drawTable(x: number, y: number, width: number, rows: Array<{
@@ -186,8 +276,13 @@ export class PDFGenerator {
         }
       ];
 
+      let totalAmount = 0;
+
       if (data.violations && data.violations.length > 0) {
         data.violations.forEach(violation => {
+          const price = typeof violation.price === 'number' ? violation.price : 0;
+          totalAmount += price;
+          
           violationRows.push({
             cells: [
               { text: violation.violationName || 'N/A', width: this.contentWidth * 0.5, bold: false },
@@ -208,8 +303,24 @@ export class PDFGenerator {
         });
       }
 
-      this.yPosition = this.drawTable(this.margin, this.yPosition, this.contentWidth, violationRows);
+      // Add total row
+      violationRows.push({
+        cells: [
+          { text: '', width: this.contentWidth * 0.5, bold: false },
+          { text: 'TOTAL:', width: this.contentWidth * 0.25, bold: true },
+          { text: this.formatCurrency(totalAmount), width: this.contentWidth * 0.25, bold: true }
+        ],
+        height: 12
+      });
+
+      this.yPosition = this.drawTableWithPageBreaks(this.margin, this.yPosition, this.contentWidth, violationRows);
       this.yPosition += 10;
+
+      // Check if we need a page break before images section
+      const imagesTableHeight = 16; // Header + subheader height
+      const imageBoxHeight = 40;
+      const totalImagesHeight = imagesTableHeight + imageBoxHeight + 50; // Extra space for evidence
+      this.checkPageBreak(totalImagesHeight);
 
       this.yPosition = this.drawTable(this.margin, this.yPosition, this.contentWidth, [
         {
@@ -225,7 +336,6 @@ export class PDFGenerator {
         }
       ]);
 
-      const imageBoxHeight = 40;
       const imageBoxWidth = (this.contentWidth / 2) - 2;
       
       // Load and display license image
@@ -258,6 +368,10 @@ export class PDFGenerator {
       
       this.yPosition += imageBoxHeight + 5;
 
+      // Check if we need a page break before evidence section
+      const evidenceSectionHeight = 8 + imageBoxHeight + 15; // Table header + image + margin
+      this.checkPageBreak(evidenceSectionHeight);
+
       this.yPosition = this.drawTable(this.margin, this.yPosition, this.contentWidth, [
         {
           cells: [{ text: 'EVIDENCE', width: this.contentWidth, bold: true }],
@@ -281,22 +395,11 @@ export class PDFGenerator {
       
       this.yPosition += imageBoxHeight + 15;
 
-      const now = new Date();
-      const reportTime = now.toLocaleString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+      // Add footer to the final page
+      this.addFooter();
       
-      this.addText(
-        `Report generated on ${reportTime}`,
-        this.margin,
-        this.yPosition,
-        { fontSize: 9 }
-      );
+      // Add page numbers to all pages
+      this.addPageNumbers();
 
       const filename = `violation_report_${data.trackingNumber || 'unknown'}_${new Date().toISOString().split('T')[0]}.pdf`;
       this.pdf.save(filename);
