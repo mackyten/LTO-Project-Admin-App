@@ -12,6 +12,7 @@ interface AuthContextType {
 // 2. Create the context.
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 // 3. Create a custom hook to use the context easily.
 export const useAuth = () => {
   const context = useContext(AuthContext);

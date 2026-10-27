@@ -1,5 +1,7 @@
 # LTO Admin App
 
+[![CI](https://github.com/mackyten/LTO-Project-Admin-App/actions/workflows/ci.yml/badge.svg)](https://github.com/mackyten/LTO-Project-Admin-App/actions/workflows/ci.yml)
+
 A web dashboard for administrators of the LTO traffic-violation system. It is the back office for the [LTO Enforcer App](https://github.com/mackyten/LTO-Project-Enforcer-App).
 
 ## Features
