@@ -37,3 +37,7 @@ src/
   components/pages/   one folder per page (components, hooks, schema, store)
   cloudinary/         image upload helper
 ```
+
+## License
+
+[MIT](LICENSE)
