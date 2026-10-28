@@ -38,6 +38,10 @@ src/
   cloudinary/         image upload helper
 ```
 
+## Notes
+
+Dashboard change notes and fix write-ups live in [docs/](docs/).
+
 ## License
 
 [MIT](LICENSE)
